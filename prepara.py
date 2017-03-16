@@ -38,8 +38,7 @@ def maximaAnual(grupos):
     dataMax = []
     for data, dado in grupos:
         vazaoMax.append(dado.values.max())
-        dataMax.append(dado.idxmax())
-        print(len(vazaoMax), len(dataMax))
+        dataMax.append(dado.idxmax()[0])
     maxAnualSerie = pd.Series(vazaoMax, dataMax)
     return maxAnualSerie
 
@@ -49,8 +48,9 @@ def grupoAnoHidro(dados, mesHidroAbr):
     for key, dado in grupos:
         aux = dado.values.T[0]
         index = dado.index
-        indexMult = list(zip(*[index.month, index.day]))
-        indexN = pd.MultiIndex.from_tuples(indexMult, names=["Mes", "Dia"])
+        #indexMult = list(zip(*[index.month, index.day]))
+        #indexN = pd.MultiIndex.from_tuples(indexMult, names=["Mes", "Dia"])
+        indexN = ['%s/%02d' % (i.month, i.day) for i in index]
         serie = pd.Series(aux, index=indexN, name=key.year)
         frameAux = pd.DataFrame(serie)
         frameGrafico = combinaDateFrame(frameGrafico, frameAux)
@@ -65,4 +65,4 @@ if __name__ == "__main__":
     #preparaGantt = gantt(periodos, '49370000')
     mesHidro, mesHidroAbr = crt.mesInicioAnoHidrologico(dadosVazao)
     grupos, dfg = grupoAnoHidro(dadosVazao, mesHidroAbr)
-    maxAnual = maximaAnual(grupos)
+    print(dfg)

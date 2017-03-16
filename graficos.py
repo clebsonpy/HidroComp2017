@@ -22,12 +22,18 @@ def plotGantt(dfGantt, filename):
     fig = FF.create_gantt(dfGantt, index_col='IndexCol', colors = ['#000000', '#858585'], group_tasks=True, bar_width=0.475)
     off.plot(fig, filename=filename)
 
+def plotHidro(dfg, filename):
+    import plotly.offline as off
+    off.plot(dfg, filename=filename)
+
 if __name__ == "__main__":
-    
+
     caminho = os.getcwd()
     dadosVazao = arq.separaDadosConsisBruto(arq.trabaLinhas(caminho, '49370000'), tipo=2)
     nFalhas, ganttBool, ganttMes = crt.falhas(dadosVazao)
     periodos = crt.periodoSemFalhas(ganttBool)
-    dfGantt = pre.gantt(periodos, '49370000')
-    plotGantt(dfGantt, filename='ganttChart')
-   
+    #dfGantt = pre.gantt(periodos, '49370000')
+    #plotGantt(dfGantt, filename='ganttChart')
+    mesHidro, mesHidroAbr = crt.mesInicioAnoHidrologico(dadosVazao)
+    grupos, dfg = pre.grupoAnoHidro(dadosVazao, mesHidroAbr)
+    plotHidro(dfg, 'line-mode')
