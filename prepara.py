@@ -10,6 +10,11 @@ import os
 import caracteristica as crt
 import arquivoTxt as arq
 
+def separaDadosConsisBruto(dados, tipo):
+        dadosSeparado = dados.iloc[dados.index.isin([tipo], level=1)]
+        dadosSeparado.reset_index(level=1, drop=True, inplace=True)
+        return dadosSeparado
+
 def combinaDateFrame(dataframe1, dataframe2):
     if len(dataframe1) > 0:
         dataframe1 = dataframe1.combine_first(dataframe2)
