@@ -102,7 +102,7 @@ class Arquivos():
 if __name__ == "__main__":
     ini = timeit.default_timer()
     caminho = os.getcwd()
-    arq = Arquivos(caminho, fonte='ONS')
+    arq = Arquivos(caminho, fonte='ANA')
     nomeArq = arq.listaArq()
     dados = arq.lerArquivos(nomeArq)
     fim = timeit.default_timer()
