@@ -7,8 +7,8 @@ Created on Thu Mar 16 02:05:38 2017
 """
 import pandas as pd
 import os
-import caracteristica as crt
-import arquivoTxt as arq
+#import caracteristica as crt
+#import arquivos as arq
 
 def separaDadosConsisBruto(dados, tipo):
         dadosSeparado = dados.iloc[dados.index.isin([tipo], level=1)]
