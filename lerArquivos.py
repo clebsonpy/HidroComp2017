@@ -10,13 +10,13 @@ import pandas as pd
 import numpy as np
 import calendar as ca
 
+
 class LerTxt():
     def __init__(self, caminho, nomeArquivo):
         self.caminho = caminho
         self.nomeArquivo = nomeArquivo
-
+        
     def linhas(self):
-        print('Arquivo: ', self.nomeArquivo)
         listaLinhas = []
         with open(os.path.join(self.caminho, self.nomeArquivo+".TXT"), encoding="Latin-1") as arquivo:
             for linha in arquivo.readlines():
@@ -33,7 +33,6 @@ class LerTxt():
         listaCons = [int(consistencia)]*dias
         indexMult = list(zip(*[listaData, listaCons]))
         return pd.MultiIndex.from_tuples(indexMult, names=["Data", "Consistencia"])
-    
     def lerTxt(self):
         listaLinhas = self.linhas()
         dadosVazao = []
@@ -57,7 +56,23 @@ class LerTxt():
     
         dadosV = pd.DataFrame(pd.concat(dadosVazao))
         return dadosV
-        
 
-    
-    
+class LerXls():
+    def __init__(self, caminho, nomeArquivo):
+        self.caminho = caminho
+        self.nomeArquivo = nomeArquivo
+        
+    def lerXls(self):
+        arq = os.path.join(self.caminho, self.nomeArquivo+'.xls')
+        dadosV = pd.read_excel(arq, shettname='Total', header=0, skiprows=5, index_col=0)
+        dadosV.drop(np.NaN, inplace=True)
+        aux = []
+        dic = {'jan':'1', 'fev':'2', 'mar':'3', 'abr':'4', 'mai':'5', 'jun':'6', 'jul':'7', 'ago':'8', 'set':'9', 'out':'10', 'nov':'11', 'dez':'12'}
+        for i in dadosV.index:
+            aux.append(i.replace(i[-8:-5], dic[i[-8:-5]]))
+        
+        dadosV.index = pd.to_datetime(aux, dayfirst=True)
+        codiColuna = [i.split(' (')[0] for i in dadosV.axes[1]]
+        dadosV.columns = codiColuna
+        
+        return dadosV.astype(float)

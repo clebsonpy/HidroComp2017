@@ -6,21 +6,8 @@ Created on Thu Mar 16 02:05:38 2017
 @author: clebson
 """
 import pandas as pd
-import os
 
 class Prepara():
-    
-    def separaDadosConsisBruto(self, dados, tipo):
-            dadosSeparado = dados.iloc[dados.index.isin([tipo], level=1)]
-            dadosSeparado.reset_index(level=1, drop=True, inplace=True)
-            return dadosSeparado
-    
-    def combinaDateFrame(self, dataframe1, dataframe2):
-        if len(dataframe1) > 0:
-            dataframe1 = dataframe1.combine_first(dataframe2)
-        else:
-            dataframe1 = dataframe2
-        return dataframe1
     
     def gantt(self, psf, nPosto):
         df = pd.DataFrame(columns=['Task', 'Start', 'Finish', 'Description', 'IndexCol'])
@@ -61,13 +48,3 @@ class Prepara():
             frameGrafico = self.combinaDateFrame(frameGrafico, frameAux)
         frameGrafico.drop_duplicates(keep='last', inplace=True)
         return grupos, frameGrafico
-
-if __name__ == "__main__":
-    caminho = os.getcwd()
-    #dadosVazao = arq.separaDadosConsisBruto(arq.trabaLinhas(caminho, '49370000'), tipo=2)
-    #nFalhas, ganttBool, ganttMes = crt.falhas(dadosVazao)
-    #periodos = crt.periodoSemFalhas(ganttBool)
-    #preparaGantt = gantt(periodos, '49370000')
-#    mesHidro, mesHidroAbr = crt.mesInicioAnoHidrologico(dadosVazao)
-#    grupos, dfg = grupoAnoHidro(dadosVazao, mesHidroAbr)
-#    print(dfg)

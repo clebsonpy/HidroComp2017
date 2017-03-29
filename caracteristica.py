@@ -5,7 +5,6 @@ Created on Wed Mar 15 22:57:24 2017
 
 @author: clebson
 """
-import os
 import pandas as pd
 import calendar as cal
 
@@ -20,9 +19,9 @@ class Caracteristicas():
         indexN = pd.MultiIndex.from_tuples(indexMult, names=["Mes", "Ano"])
         grupoMesAno.set_index(indexN, inplace=True)
         grupoMesMedia = grupoMesAno[self.nPosto].groupby(level='Mes').mean()
-        mesHidro = grupoMesMedia.idxmin().values
-        mesHidroAbr = cal.month_abbr[mesHidro[0]].upper()
-        return mesHidro[0], mesHidroAbr
+        mesHidro = grupoMesMedia.idxmin()
+        mesHidroAbr = cal.month_abbr[mesHidro]
+        return mesHidro, mesHidroAbr.upper()
     
     #Periodos sem falhas
     def periodoSemFalhas(self):
@@ -31,9 +30,9 @@ class Caracteristicas():
         listaFim = []
         ganttBool = self.falhas()[1][self.nPosto]
         for i in ganttBool.index:
-            if ~ganttBool.loc[i].values:
+            if ~ganttBool.loc[i]:
                 aux.append(i)
-            elif len(aux) > 2 and ganttBool.loc[i].values:
+            elif len(aux) > 2 and ganttBool.loc[i]:
                 listaInicio.append(aux[0])
                 listaFim.append(aux[-1])
                 aux = []
