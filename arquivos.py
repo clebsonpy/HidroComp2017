@@ -3,7 +3,7 @@ import timeit
 import calendar as ca
 import pandas as pd
 import numpy as np
-import prepara as pp
+import prepara
 
 class Arquivos():
     def __init__(self, caminho, fonte):
@@ -24,7 +24,10 @@ class Arquivos():
         else:
             return listaArquivo
     
-    def lerArquivos(self, nomeArquivo):
+    def lerArquivos(self, nomeArquivo=None, consistencia=None):
+        if nomeArquivo == None:
+            nomeArquivo = self.listaArq()
+        
         def lerTxt():
             def linhas():
                 print('Arquivo: ', nomeArquivo)
@@ -90,8 +93,11 @@ class Arquivos():
         
         if type(nomeArquivo) == list:
             dadosVazao = pd.DataFrame()
+            pp = prepara.Prepara()
             for nome in nomeArquivo:
                 dadosVazao = pp.combinaDateFrame(dadosVazao, self.lerArquivos(nome))
+            if consistencia != None:
+                dadosVazao = pp.separaDadosConsisBruto(dadosVazao, consistencia)
             return dadosVazao
         else:
             if self.fonte == 'ANA':
@@ -103,8 +109,7 @@ if __name__ == "__main__":
     ini = timeit.default_timer()
     caminho = os.getcwd()
     arq = Arquivos(caminho, fonte='ANA')
-    nomeArq = arq.listaArq()
-    dados = arq.lerArquivos(nomeArq)
+    dados = arq.lerArquivos(consistencia=2)
     fim = timeit.default_timer()
     print('Duração: %s' % (fim-ini))
 #    dadox = pd.DataFrame.add(dados)

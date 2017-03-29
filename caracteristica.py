@@ -8,27 +8,28 @@ Created on Wed Mar 15 22:57:24 2017
 import os
 import pandas as pd
 import calendar as cal
-import arquivoTxt as arq
 
 class Caracteristicas():
-    def __init__(self, dadosSeries):
-        self.dadosVazao = dadosSeries
+    def __init__(self, dadosVazao, nPosto):
+        self.dadosVazao = dadosVazao
+        self.nPosto = nPosto
     #Ano hidrlogico
     def mesInicioAnoHidrologico(self):
         grupoMesAno = self.dadosVazao.groupby(pd.Grouper(freq='M')).mean().to_period()
         indexMult = list(zip(*[grupoMesAno.index.month, grupoMesAno.index.year]))
         indexN = pd.MultiIndex.from_tuples(indexMult, names=["Mes", "Ano"])
         grupoMesAno.set_index(indexN, inplace=True)
-        grupoMesMedia = grupoMesAno.groupby(level='Mes').mean()
+        grupoMesMedia = grupoMesAno[self.nPosto].groupby(level='Mes').mean()
         mesHidro = grupoMesMedia.idxmin().values
         mesHidroAbr = cal.month_abbr[mesHidro[0]].upper()
         return mesHidro[0], mesHidroAbr
     
     #Periodos sem falhas
-    def periodoSemFalhas(self, ganttBool):
+    def periodoSemFalhas(self):
         aux = []
         listaInicio = []
         listaFim = []
+        ganttBool = self.falhas()[1][self.nPosto]
         for i in ganttBool.index:
             if ~ganttBool.loc[i].values:
                 aux.append(i)
@@ -53,9 +54,3 @@ class Caracteristicas():
             if ganttMes.loc[i].isnull().all():
                 ganttMes.set_value(index = i, col = ganttMes.axes[1], value = i.day)
         return nFalhas, ganttBool, ganttMes.to_period()
-
-if __name__ == "__main__":
-    caminho = os.getcwd()
-    dados = arq.separaDadosConsisBruto(arq.trabaLinhas(caminho, '49370000'), tipo=2)
-    nfalhas, ganttBool, ganttMes = Caracteristicas(dados).falhas()
-    periodos = Caracteristicas(dados).periodoSemFalhas(ganttBool)
