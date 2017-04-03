@@ -11,7 +11,8 @@ import caracteristica as crt
 import prepara as pp
 import plotly.tools as tls
 import plotly.figure_factory as FF
-import plotly.offline as off
+import plotly.plotly as py
+import cufflinks as cf
 
 class Graficos():
     
@@ -19,13 +20,14 @@ class Graficos():
         tls.set_credentials_file(username=username, api_key= apiKey)
         tls.set_config_file(world_readable=True, sharing='public')
     
-    def plotGantt(self, dfGantt, filename):
-        fig = FF.create_gantt(dfGantt, index_col='IndexCol', colors = ['#000000', '#858585'], group_tasks=True, bar_width=0.475)
-        off.plot(fig, filename=filename+'.html')
-    
+#    def plotGantt(self, dfGantt, filename):
+#        fig = FF.create_gantt(dfGantt, index_col='IndexCol', colors = ['#000000', '#858585'], group_tasks=True, bar_width=0.475)
+#        off.plot(fig, filename=filename+'.html')
+#    
     def plotHidro(self, dfg, filename):
-        off.plot(dfg, filename=filename+'.html')
-    
+        self.plotlyCredenciais('clebsonpy', 'zmuDaQgzV9NgCcTOffFm')
+        py.plot(dfg,filename=filename)
+        
 if __name__ == "__main__":
 
     caminho = os.getcwd()

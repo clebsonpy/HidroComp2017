@@ -9,6 +9,7 @@ import os
 import timeit
 import arquivos as arq
 import caracteristica as crt
+import graficos as gfc
 
 if __name__ == "__main__":
     ini = timeit.default_timer()
@@ -16,6 +17,9 @@ if __name__ == "__main__":
     dados = arq.Arquivos(caminho, fonte='ANA', consistencia=2).lerArquivos()
     caract = crt.Caracteristicas(dados, '49370000')
     mesInicioAnoHidro = caract.mesInicioAnoHidrologico()
+    cheias = caract.cheias()
     periodo = caract.periodoSemFalhas()
+    grafico = gfc.Graficos()
+    grafico.plotHidro(dados, 'Cle')
     fim = timeit.default_timer()
     print('Duração: %s' % (fim-ini))
