@@ -12,7 +12,7 @@ class Caracteristicas():
     def __init__(self, dadosVazao, nPosto):
         self.dadosVazao = dadosVazao
         self.nPosto = nPosto
-    #Ano hidrlogico
+    #Ano hidrologico
     def mesInicioAnoHidrologico(self):
         grupoMesAno = self.dadosVazao.groupby(pd.Grouper(freq='M')).mean().to_period()
         indexMult = list(zip(*[grupoMesAno.index.month, grupoMesAno.index.year]))
@@ -22,7 +22,7 @@ class Caracteristicas():
         mesHidro = grupoMesMedia.idxmin()
         mesHidroAbr = cal.month_abbr[mesHidro]
         return mesHidro, mesHidroAbr.upper()
-    
+
     #Periodos sem falhas
     def periodoSemFalhas(self):
         aux = []
@@ -36,16 +36,16 @@ class Caracteristicas():
                 listaInicio.append(aux[0])
                 listaFim.append(aux[-1])
                 aux = []
-                
+
         if len(aux) > 0:
             listaInicio.append(aux[0])
             listaFim.append(aux[-1])
         dic = {'Inicio': listaInicio, 'Fim': listaFim}
         return pd.DataFrame(dic)
-    
+
 #    def cheias(self, vazaoLimiar=None):
-        
-    
+
+
     def falhas(self):
         self.dadosVazao.sort_index(inplace=True)
         nFalhas = self.dadosVazao.isnull().sum()
