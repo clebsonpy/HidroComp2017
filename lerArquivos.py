@@ -33,6 +33,7 @@ class LerTxt():
         listaCons = [int(consistencia)]*dias
         indexMult = list(zip(*[listaData, listaCons]))
         return pd.MultiIndex.from_tuples(indexMult, names=["Data", "Consistencia"])
+    
     def lerTxt(self):
         listaLinhas = self.linhas()
         dadosVazao = []

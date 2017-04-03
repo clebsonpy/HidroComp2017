@@ -40,8 +40,6 @@ class Prepara():
         for key, dado in grupos:
             aux = dado.values.T[0]
             index = dado.index
-            #indexMult = list(zip(*[index.month, index.day]))
-            #indexN = pd.MultiIndex.from_tuples(indexMult, names=["Mes", "Dia"])
             indexN = ['%s/%02d' % (i.month, i.day) for i in index]
             serie = pd.Series(aux, index=indexN, name=key.year)
             frameAux = pd.DataFrame(serie)

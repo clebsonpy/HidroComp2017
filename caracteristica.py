@@ -43,6 +43,9 @@ class Caracteristicas():
         dic = {'Inicio': listaInicio, 'Fim': listaFim}
         return pd.DataFrame(dic)
     
+#    def cheias(self, vazaoLimiar=None):
+        
+    
     def falhas(self):
         self.dadosVazao.sort_index(inplace=True)
         nFalhas = self.dadosVazao.isnull().sum()
