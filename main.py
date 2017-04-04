@@ -9,7 +9,6 @@ import os
 import timeit
 import arquivos as arq
 import caracteristica as crt
-import graficos as gfc
 
 if __name__ == "__main__":
     ini = timeit.default_timer()

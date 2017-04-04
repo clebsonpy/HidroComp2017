@@ -9,9 +9,19 @@ import pandas as pd
 import calendar as cal
 
 class Caracteristicas():
-    def __init__(self, dadosVazao, nPosto):
-        self.dadosVazao = dadosVazao
+    def __init__(self, dadosVazao, nPosto, dataInicio = None, dataFim = None):
         self.nPosto = nPosto.upper()
+        self.dataInicio = pd.to_datetime(dataInicio, dayfirst=True)
+        self.dataFim = pd.to_datetime(dataFim, dayfirst=True)
+        if self.dataInicio == None and self.dataFim == None:
+            self.dadosVazao = dadosVazao.loc[self.dataInicio:self.dataFim]
+        elif self.dataInicio == None:
+            self.dadosVazao = dadosVazao.loc[:self.dataFim]
+        elif self.dataFim == None:
+            self.dadosVazao = dadosVazao.loc[self.dataInicio:]
+        else:
+            self.dadosVazao = dadosVazao
+        
     #Ano hidrologico
     def mesInicioAnoHidrologico(self):
         mediaMes = [self.dadosVazao[self.nPosto].loc[self.dadosVazao.index.month==i].mean() for i in range(1,13)]
@@ -40,14 +50,14 @@ class Caracteristicas():
 
     def cheias(self, vazaoLimiar=0.75):
         limiar = self.dadosVazao[self.nPosto].quantile(vazaoLimiar)
-        cheias = self.dadosVazao[self.nPosto].isin(self.dadosVazao[self.nPosto].loc[self.dadosVazao[self.nPosto] >= limiar])
+        cheias = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] >= limiar, self.nPosto])
         grupoCheias = cheias.groupby(pd.Grouper(freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
         maxEvento = {'Ano': [], 'Data':[], 'Vazao':[], 'Inicio':[], 'Fim':[], 'Duracao':[]}
         for key, serie in grupoCheias:
             dados = {'Data':[], 'Vazao':[]}
             for i in serie.index:
                 if serie.loc[i]:
-                    dados['Vazao'].append(self.dadosVazao[self.nPosto].loc[i])
+                    dados['Vazao'].append(self.dadosVazao.loc[i, self.nPosto])
                     dados['Data'].append(i)
                 elif len(dados['Vazao']) > 0:
                     maxEvento['Ano'].append(key.year)
@@ -58,25 +68,27 @@ class Caracteristicas():
                     maxEvento['Duracao'].append(len(dados['Data']))
                     dados = {'Data':[], 'Vazao':[]}
         eventoCheia = pd.DataFrame(maxEvento)
-        dic = {'Ano':[], 'Duracao':[], 'nPulsos':[]}
         
+        dic = {'Ano':[], 'Duracao':[], 'nPulsos':[]}
         for i, serie in grupoCheias:
             dic['Ano'].append(i.year)
-            dic['Duracao'].append(eventoCheia['Duracao'].loc[eventoCheia['Ano'] == i.year].mean())
-            dic['nPulsos'].append(len(eventoCheia.loc[eventoCheia['Ano'] == i.year]))
+            dic['Duracao'].append(eventoCheia.Duracao.loc[eventoCheia.Ano == i.year].mean())
+            dic['nPulsos'].append(len(eventoCheia.loc[eventoCheia.Ano == i.year]))
         evento = pd.DataFrame(dic)
+        evento.set_value(evento.loc[evento.Duracao.isnull()].index, 'Duracao', 0)
+        
         return eventoCheia, evento
     
     def estiagem(self, vazaoLimiar=0.25):
         limiar = self.dadosVazao[self.nPosto].quantile(vazaoLimiar)
-        cheias = self.dadosVazao[self.nPosto].isin(self.dadosVazao[self.nPosto].loc[self.dadosVazao[self.nPosto] <= limiar])
+        cheias = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] <= limiar, self.nPosto])
         grupoCheias = cheias.groupby(pd.Grouper(freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
         minEvento = {'Ano': [], 'Data':[], 'Vazao':[], 'Inicio':[], 'Fim':[], 'Duracao':[]}
         for key, serie in grupoCheias:
             dados = {'Data':[], 'Vazao':[]}
             for i in serie.index:
                 if serie.loc[i]:
-                    dados['Vazao'].append(self.dadosVazao[self.nPosto].loc[i])
+                    dados['Vazao'].append(self.dadosVazao.loc[i, self.nPosto])
                     dados['Data'].append(i)
                 elif len(dados['Vazao']) > 0:
                     minEvento['Ano'].append(key.year)
@@ -87,13 +99,15 @@ class Caracteristicas():
                     minEvento['Duracao'].append(len(dados['Data']))
                     dados = {'Data':[], 'Vazao':[]}
         eventoEstiagem = pd.DataFrame(minEvento)
-        dic = {'Ano':[], 'Duracao':[], 'nPulsos':[]}
         
+        dic = {'Ano':[], 'Duracao':[], 'nPulsos':[]}
         for i, serie in grupoCheias:
             dic['Ano'].append(i.year)
-            dic['Duracao'].append(eventoEstiagem['Duracao'].loc[eventoEstiagem['Ano'] == i.year].mean())
-            dic['nPulsos'].append(len(eventoEstiagem.loc[eventoEstiagem['Ano'] == i.year]))
+            dic['Duracao'].append(eventoEstiagem.loc[eventoEstiagem.Ano == i.year, 'Duracao'].mean())
+            dic['nPulsos'].append(len(eventoEstiagem.loc[eventoEstiagem.Ano == i.year]))
         evento = pd.DataFrame(dic)
+        evento.set_value(evento.loc[evento.Duracao.isnull()].index, 'Duracao', 0)
+        
         return eventoEstiagem, evento
     
     
