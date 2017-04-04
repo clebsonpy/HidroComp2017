@@ -25,14 +25,7 @@ class Prepara():
             n *= -1
         return df
     
-    def maximaAnual(self, grupos):
-        vazaoMax = []
-        dataMax = []
-        for data, dado in grupos:
-            vazaoMax.append(dado.values.max())
-            dataMax.append(dado.idxmax()[0])
-        maxAnualSerie = pd.Series(vazaoMax, dataMax)
-        return maxAnualSerie
+    
     
     def grupoAnoHidro(self, dados, mesHidroAbr):
         grupos = dados.groupby(pd.Grouper(freq='AS-%s' % mesHidroAbr))
