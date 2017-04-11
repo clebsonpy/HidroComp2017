@@ -78,3 +78,13 @@ class LerXls():
         dadosV.columns = codiColuna
 
         return dadosV.astype(float)
+
+class LerHdf5():
+    def __init__(self, caminho, nomeArquivo):
+        self.caminho = caminho
+        self.nomeArquivo = nomeArquivo
+        
+    def lerHdf5(self):
+        arq = os.path.join(self.caminho, self.nomeArquivo+'.HDF5')
+        dadosV = pd.read_hdf(arq)
+        return dadosV

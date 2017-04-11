@@ -48,12 +48,18 @@ class Caracteristicas():
         dic = {'Inicio': listaInicio, 'Fim': listaFim}
         return pd.DataFrame(dic)
 
-    def cheias(self, vazaoLimiar=0.75):
+    def pulsosDuracao(self, vazaoLimiar=0.75, evento='cheia'):
         limiar = self.dadosVazao[self.nPosto].quantile(vazaoLimiar)
-        cheias = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] >= limiar, self.nPosto])
-        grupoCheias = cheias.groupby(pd.Grouper(freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
+        if evento == 'cheia':
+            eventos = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] >= limiar, self.nPosto])
+        elif evento == 'estiagem':
+            eventos = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] <= limiar, self.nPosto])
+        else:
+            return 'Evento erro!'
+        
+        grupoEventos = eventos.groupby(pd.Grouper(freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
         maxEvento = {'Ano': [], 'Data':[], 'Vazao':[], 'Inicio':[], 'Fim':[], 'Duracao':[]}
-        for key, serie in grupoCheias:
+        for key, serie in grupoEventos:
             dados = {'Data':[], 'Vazao':[]}
             for i in serie.index:
                 if serie.loc[i]:
@@ -67,48 +73,17 @@ class Caracteristicas():
                     maxEvento['Fim'].append(dados['Data'][-1])
                     maxEvento['Duracao'].append(len(dados['Data']))
                     dados = {'Data':[], 'Vazao':[]}
-        eventoCheia = pd.DataFrame(maxEvento)
+        eventosPicos = pd.DataFrame(maxEvento)
         
         dic = {'Ano':[], 'Duracao':[], 'nPulsos':[]}
-        for i, serie in grupoCheias:
+        for i, serie in grupoEventos:
             dic['Ano'].append(i.year)
-            dic['Duracao'].append(eventoCheia.Duracao.loc[eventoCheia.Ano == i.year].mean())
-            dic['nPulsos'].append(len(eventoCheia.loc[eventoCheia.Ano == i.year]))
+            dic['Duracao'].append(eventosPicos.Duracao.loc[eventosPicos.Ano == i.year].mean())
+            dic['nPulsos'].append(len(eventosPicos.loc[eventosPicos.Ano == i.year]))
         evento = pd.DataFrame(dic)
         evento.set_value(evento.loc[evento.Duracao.isnull()].index, 'Duracao', 0)
         
-        return eventoCheia, evento
-    
-    def estiagem(self, vazaoLimiar=0.25):
-        limiar = self.dadosVazao[self.nPosto].quantile(vazaoLimiar)
-        cheias = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] <= limiar, self.nPosto])
-        grupoCheias = cheias.groupby(pd.Grouper(freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
-        minEvento = {'Ano': [], 'Data':[], 'Vazao':[], 'Inicio':[], 'Fim':[], 'Duracao':[]}
-        for key, serie in grupoCheias:
-            dados = {'Data':[], 'Vazao':[]}
-            for i in serie.index:
-                if serie.loc[i]:
-                    dados['Vazao'].append(self.dadosVazao.loc[i, self.nPosto])
-                    dados['Data'].append(i)
-                elif len(dados['Vazao']) > 0:
-                    minEvento['Ano'].append(key.year)
-                    minEvento['Data'].append(dados['Data'][dados['Vazao'].index(max(dados['Vazao']))])
-                    minEvento['Vazao'].append(max(dados['Vazao']))
-                    minEvento['Inicio'].append(dados['Data'][0])
-                    minEvento['Fim'].append(dados['Data'][-1])
-                    minEvento['Duracao'].append(len(dados['Data']))
-                    dados = {'Data':[], 'Vazao':[]}
-        eventoEstiagem = pd.DataFrame(minEvento)
-        
-        dic = {'Ano':[], 'Duracao':[], 'nPulsos':[]}
-        for i, serie in grupoCheias:
-            dic['Ano'].append(i.year)
-            dic['Duracao'].append(eventoEstiagem.loc[eventoEstiagem.Ano == i.year, 'Duracao'].mean())
-            dic['nPulsos'].append(len(eventoEstiagem.loc[eventoEstiagem.Ano == i.year]))
-        evento = pd.DataFrame(dic)
-        evento.set_value(evento.loc[evento.Duracao.isnull()].index, 'Duracao', 0)
-        
-        return eventoEstiagem, evento
+        return eventosPicos, evento
     
     
     
