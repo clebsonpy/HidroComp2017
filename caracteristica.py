@@ -86,12 +86,3 @@ class Caracteristicas():
         return eventosPicos, evento
     
     
-    
-#    def maximaAnual(self, grupos):
-#        vazaoMax = []
-#        dataMax = []
-#        for data, dado in grupos:
-#            vazaoMax.append(dado.values.max())
-#            dataMax.append(dado.idxmax()[0])
-#        maxAnualSerie = pd.Series(vazaoMax, dataMax)
-#        return maxAnualSerie

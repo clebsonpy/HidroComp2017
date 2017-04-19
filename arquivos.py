@@ -4,7 +4,7 @@ import lerArquivos as la
 
 class Arquivos(la.LerTxt, la.LerXls, la.LerHdf5):
     
-    def __init__(self, caminho, nomeArquivo=None, consistencia=None, fonte=None):
+    def __init__(self, caminho, nomeArquivo=None, consistencia=2, fonte=None):
         self.caminho = caminho
         self.fonte = fonte
         self.nomeArquivo = nomeArquivo
@@ -39,9 +39,8 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerHdf5):
         else:
             if self.fonte == 'ANA':
                 dados = self.lerTxt()
-                if self.consistencia != None:
-                    dados = dados.iloc[dados.index.isin([self.consistencia], level=1)]
-                    dados.reset_index(level=1, drop=True, inplace=True)
+                dados = dados.iloc[dados.index.isin([self.consistencia], level=1)]
+                dados.reset_index(level=1, drop=True, inplace=True)
                 return dados
             elif self.fonte == 'ONS':
                 return self.lerXls()
