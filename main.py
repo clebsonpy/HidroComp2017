@@ -10,18 +10,18 @@ import timeit
 import arquivos as arq
 import caracteristica as crt
 import prepara as pr
-
+import graficos as gfc
 if __name__ == "__main__":
     ini = timeit.default_timer()
     caminho = os.getcwd()
     dados = arq.Arquivos(caminho, fonte='ANA').lerArquivos()
-    caract = crt.Caracteristicas(dados, '39980000')
+    caract = crt.Caracteristicas(dados, '49370000')
     mesInicioAnoHidro = caract.mesInicioAnoHidrologico()
-    prep = pr.Prepara('39980000')
-    x = prep.grupoAnoHidro(dados, mesInicioAnoHidro)
+    prep = pr.Prepara('49370000')    
+    dadosPre = prep.grupoAnoHidro(dados, mesInicioAnoHidro)
 #    picos, eventos = caract.pulsosDuracao(vazaoLimiar=0.25, evento='estiagem')
 #    periodo = caract.periodoSemFalhas()
-#    grafico = gfc.Graficos()
-#    grafico.plotHidro(dados, 'Cle')
+    grafico = gfc.Graficos()
+    grafico.plotHidroPorAno(dadosPre, 'Hidrograma_por_ano')
     fim = timeit.default_timer()
     print('Duração: %s' % (fim-ini))

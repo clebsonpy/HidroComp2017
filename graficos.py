@@ -9,24 +9,28 @@ import os
 import arquivos as arq
 import caracteristica as crt
 import prepara as pp
-import plotly.tools as tls
+import plotly as py
 import plotly.figure_factory as FF
-import plotly.plotly as py
-import cufflinks as cf
+#import cufflinks as cf
 
-class Graficos():
-    
+class Graficos(pp.Prepara):
+    def __init__(self, dados, nPosto, nomeArq):
+        self.dados = dados
+        self.nPosto = nPosto
+        self.nomeArq = nomeArq
+        
     def plotlyCredenciais(self, username, apiKey):
-        tls.set_credentials_file(username=username, api_key= apiKey)
-        tls.set_config_file(world_readable=True, sharing='public')
+        py.tools.set_credentials_file(username=username, api_key= apiKey)
+        py.tools.set_config_file(world_readable=True, sharing='public')
     
-#    def plotGantt(self, dfGantt, filename):
-#        fig = FF.create_gantt(dfGantt, index_col='IndexCol', colors = ['#000000', '#858585'], group_tasks=True, bar_width=0.475)
-#        off.plot(fig, filename=filename+'.html')
-#    
-    def plotHidro(self, dfg, filename):
-        self.plotlyCredenciais('clebsonpy', 'zmuDaQgzV9NgCcTOffFm')
-        py.plot(dfg,filename=filename)
+    def plotGantt(self, dfGantt, filename):
+        fig = FF.create_gantt(dfGantt, index_col='IndexCol', colors = ['#000000', '#858585'], group_tasks=True, bar_width=0.475)
+        off.plot(fig, filename=filename+'.html')
+    
+    def plotHidroPorAno(self, filename):
+        dfg = self.grupoAnoHidro(self.dados, )
+        fig = dfg.iplot(kind='scatter', asFigure=True)
+        py.offline.plot(fig,filename=filename+'.html')
         
 if __name__ == "__main__":
 
