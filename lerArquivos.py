@@ -8,6 +8,7 @@ Created on Wed Mar 29 10:15:34 2017
 import os
 import pandas as pd
 import numpy as np
+import gdal
 import calendar as ca
 
 
@@ -79,12 +80,22 @@ class LerXls():
 
         return dadosV.astype(float)
 
-class LerHdf5():
-    def __init__(self, caminho, nomeArquivo):
+class LerHdf():
+    def __init__(self, caminho, nomeArquivo, lat, log):
         self.caminho = caminho
         self.nomeArquivo = nomeArquivo
+        self.log = log
+        self.lat = lat
         
-    def lerHdf5(self):
-        arq = os.path.join(self.caminho, self.nomeArquivo+'.HDF5')
-        dadosV = pd.read_hdf(arq)
-        return dadosV
+    def lerHdf(self):
+        arq = gdal.Open(os.path.join(self.caminho, self.nomeArquivo+'.HDF'))
+        subData = arq.GetSubDatasets()
+        precip = gdal.Open(subData[0][0])
+        df = pd.DataFrame(precip.ReadAsArray())
+        df1 = df.iloc[range(((180+self.log[0])*4)-1,(180+self.log[1])*4), range(((50+self.lat[0])*4)-1,(50+self.lat[1])*4)]
+        lista=[]
+        for i in df1:
+            for k in df1[i].index:
+                lista.append(pd.Series(df1[i][k], name=(((i+1)*0.25)-50,((k+1)*0.25)-180)))
+        dfa = pd.DataFrame(lista).T
+        return dfa
