@@ -13,8 +13,8 @@ import prepara as pr
 import graficos as gfc
 if __name__ == "__main__":
     ini = timeit.default_timer()
-    caminho = os.getcwd()
-    dados = arq.Arquivos(caminho, fonte='NASA', log=[-60,-30], lat=[-30,0]).lerArquivos()
+    caminho = os.getcwd() #'/home/clebson/Área de Trabalho/Nasa/' 
+    dados = arq.Arquivos(caminho, fonte='NASA', lon=[-60,-30], lat=[-30,0]).lerArquivos()
 #    caract = crt.Caracteristicas(dados, '49370000')
 #    mesInicioAnoHidro = caract.mesInicioAnoHidrologico()
 #    prep = pr.Prepara('49370000')    

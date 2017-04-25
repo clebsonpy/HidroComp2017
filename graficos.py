@@ -25,7 +25,7 @@ class Graficos(pp.Prepara):
     
     def plotGantt(self, dfGantt, filename):
         fig = FF.create_gantt(dfGantt, index_col='IndexCol', colors = ['#000000', '#858585'], group_tasks=True, bar_width=0.475)
-        off.plot(fig, filename=filename+'.html')
+        py.offline.plot(fig, filename=filename+'.html')
     
     def plotHidroPorAno(self, filename):
         dfg = self.grupoAnoHidro(self.dados, )

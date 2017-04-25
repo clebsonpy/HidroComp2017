@@ -81,10 +81,10 @@ class LerXls():
         return dadosV.astype(float)
 
 class LerHdf():
-    def __init__(self, caminho, nomeArquivo, lat, log):
+    def __init__(self, caminho, nomeArquivo, lat, lon):
         self.caminho = caminho
         self.nomeArquivo = nomeArquivo
-        self.log = log
+        self.lon = lon
         self.lat = lat
         
     def lerHdf(self):
@@ -92,7 +92,7 @@ class LerHdf():
         subData = arq.GetSubDatasets()
         precip = gdal.Open(subData[0][0])
         df = pd.DataFrame(precip.ReadAsArray())
-        df1 = df.iloc[range(((180+self.log[0])*4)-1,(180+self.log[1])*4), range(((50+self.lat[0])*4)-1,(50+self.lat[1])*4)]
+        df1 = df.iloc[range(((180+self.lon[0])*4)-1,(180+self.lon[1])*4), range(((50+self.lat[0])*4)-1,(50+self.lat[1])*4)]
         lista=[]
         for i in df1:
             for k in df1[i].index:

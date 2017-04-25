@@ -4,12 +4,12 @@ import lerArquivos as la
 
 class Arquivos(la.LerTxt, la.LerXls, la.LerHdf):
     
-    def __init__(self, caminho, nomeArquivo=None, consistencia=2, fonte=None,  lat=[-50,50], log = [-180,180]):
+    def __init__(self, caminho, nomeArquivo=None, consistencia=2, fonte=None,  lat=[-50,50], lon = [-180,180]):
         self.caminho = caminho
         self.fonte = fonte
         self.nomeArquivo = nomeArquivo
         self.consistencia = consistencia
-        self.log = log
+        self.lon = lon
         self.lat = lat
         
         
