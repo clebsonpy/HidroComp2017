@@ -86,10 +86,10 @@ class LerHdf():
         self.nomeArquivo = nomeArquivo
 #        self.lon = lon
 #        self.lat = lat
-        
+
     def lerHdf(self):
         arq = gdal.Open(os.path.join(self.caminho, self.nomeArquivo+'.HDF5'))
-        #3B-HHR-CS-36W7S34W8S.MS.MRG.3IMERG.20160424-S000000-E002959.0001.V04A.HDF5
+#        3B-HHR-CS-36W7S34W8S.MS.MRG.3IMERG.20160424-S000000-E002959.0001.V04A.HDF5
         dataAux = self.nomeArquivo.split('.')[4].split('-')
         data = pd.to_datetime(dataAux[0]+dataAux[2].replace('E',''))
 #        print(type(data))
@@ -103,6 +103,6 @@ class LerHdf():
             for k in df[i].index:
                 lista.append(df[i][k])
                 index.append((i,k))
-        
+
         dfa = pd.DataFrame(pd.Series(lista, index=index, name=data))
         return dfa.T

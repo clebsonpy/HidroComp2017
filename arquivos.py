@@ -3,7 +3,7 @@ import pandas as pd
 import lerArquivos as la
 
 class Arquivos(la.LerTxt, la.LerXls, la.LerHdf):
-    
+
     def __init__(self, caminho, nomeArquivo=None, consistencia=2, fonte=None):
         self.caminho = caminho
         self.fonte = fonte
@@ -11,8 +11,8 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerHdf):
         self.consistencia = consistencia
 #        self.lon = lon
 #        self.lat = lat
-        
-        
+
+
     def listaArq(self):
         listaDir = os.listdir(self.caminho)
         tipos = {'ONS':'.xls', 'ANA':'.TXT', 'NASA':'.HDF5'}
@@ -21,19 +21,19 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerHdf):
             if os.path.isfile(os.path.join(self.caminho, arquivo)):
                 nome, ext = os.path.splitext(arquivo)
                 if ext == tipos[self.fonte]:
-                    listaArquivo.append(nome)  
+                    listaArquivo.append(nome)
         return listaArquivo
-    
+
     def lerArquivos(self):
         if self.nomeArquivo == None:
             self.nomeArquivo = self.listaArq()
-            
+
         if type(self.nomeArquivo) == list:
             dadosVazao = pd.DataFrame()
             x = 0
             tam = len(self.nomeArquivo)
             for nome in self.nomeArquivo:
-                x += 1 
+                x += 1
                 print(x, 'de', tam)
                 self.nomeArquivo = nome
                 if len(dadosVazao) > 0:
@@ -41,7 +41,7 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerHdf):
                 else:
                     dadosVazao = self.lerArquivos()
             return dadosVazao
-        
+
         else:
             if self.fonte == 'ANA':
                 dados = self.lerTxt()
@@ -52,4 +52,3 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerHdf):
                 return self.lerXls()
             elif self.fonte == 'NASA':
                 return self.lerHdf()
-        
