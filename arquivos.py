@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import lerArquivos as la
 
-class Arquivos(la.LerTxt, la.LerXls, la.LerHdf):
+class Arquivos(la.LerTxt, la.LerXls, la.LerHdf, la.LerSam):
 
     def __init__(self, caminho, nomeArquivo=None, consistencia=2, fonte=None):
         self.caminho = caminho
@@ -15,7 +15,7 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerHdf):
 
     def listaArq(self):
         listaDir = os.listdir(self.caminho)
-        tipos = {'ONS':'.xls', 'ANA':'.TXT', 'NASA':'.HDF5'}
+        tipos = {'ONS':'.xls', 'ANA':'.TXT', 'NASA':'.HDF5', 'CEMADEN':'.sam'}
         listaArquivo = []
         for arquivo in listaDir:
             if os.path.isfile(os.path.join(self.caminho, arquivo)):
@@ -52,3 +52,5 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerHdf):
                 return self.lerXls()
             elif self.fonte == 'NASA':
                 return self.lerHdf()
+            elif self.fonte == 'CEMADEN':
+                return self.lerSam()

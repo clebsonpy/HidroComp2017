@@ -106,3 +106,29 @@ class LerHdf():
 
         dfa = pd.DataFrame(pd.Series(lista, index=index, name=data))
         return dfa.T
+
+class LerSam():
+    def __init__(self, caminho, nomeArquivo):
+        self.caminho = caminho
+        self.nomeArquivo = nomeArquivo
+    
+    def linhasSam(self):
+        listaLinhas = []
+        with open(os.path.join(self.caminho, self.nomeArquivo+".sam"), 'r') as arq:
+            for linha in arq.readlines():
+                listaLinhas.append(linha.split())
+        return listaLinhas
+    
+    def lerSam(self):
+        listaLinhas = self.linhasSam()
+        dado = []
+        index = []
+        cont = 0
+        for linha in listaLinhas:
+            if cont > 0:
+                dataHora = pd.to_datetime(self.nomeArquivo)
+                dado.append(linha[3])
+                index.append((linha[1], linha[2]))
+            cont +=1
+        dfa = pd.DataFrame(pd.Series(dado, index=index, name=dataHora))
+        return dfa.T
