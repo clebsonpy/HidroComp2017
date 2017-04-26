@@ -4,22 +4,22 @@ import lerArquivos as la
 
 class Arquivos(la.LerTxt, la.LerXls, la.LerHdf):
     
-    def __init__(self, caminho, nomeArquivo=None, consistencia=2, fonte=None,  lat=[-50,50], lon = [-180,180]):
+    def __init__(self, caminho, nomeArquivo=None, consistencia=2, fonte=None):
         self.caminho = caminho
         self.fonte = fonte
         self.nomeArquivo = nomeArquivo
         self.consistencia = consistencia
-        self.lon = lon
-        self.lat = lat
+#        self.lon = lon
+#        self.lat = lat
         
         
     def listaArq(self):
         listaDir = os.listdir(self.caminho)
-        tipos = {'ONS':'xls', 'ANA':'TXT', 'NASA':'HDF'}
+        tipos = {'ONS':'.xls', 'ANA':'.TXT', 'NASA':'.HDF5'}
         listaArquivo = []
         for arquivo in listaDir:
             if os.path.isfile(os.path.join(self.caminho, arquivo)):
-                nome, ext = arquivo.split('.')
+                nome, ext = os.path.splitext(arquivo)
                 if ext == tipos[self.fonte]:
                     listaArquivo.append(nome)  
         return listaArquivo
@@ -30,7 +30,11 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerHdf):
             
         if type(self.nomeArquivo) == list:
             dadosVazao = pd.DataFrame()
+            x = 0
+            tam = len(self.nomeArquivo)
             for nome in self.nomeArquivo:
+                x += 1 
+                print(x, 'de', tam)
                 self.nomeArquivo = nome
                 if len(dadosVazao) > 0:
                     dadosVazao = dadosVazao.combine_first(self.lerArquivos())

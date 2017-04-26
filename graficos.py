@@ -14,7 +14,7 @@ import plotly.figure_factory as FF
 #import cufflinks as cf
 
 class Graficos(pp.Prepara):
-    def __init__(self, dados, nPosto, nomeArq):
+    def __init__(self, dados, nPosto=None, nomeArq=None):
         self.dados = dados
         self.nPosto = nPosto
         self.nomeArq = nomeArq
@@ -28,7 +28,7 @@ class Graficos(pp.Prepara):
         py.offline.plot(fig, filename=filename+'.html')
     
     def plotHidroPorAno(self, filename):
-        dfg = self.grupoAnoHidro(self.dados, )
+        dfg = self.grupoAnoHidro(self.dados)
         fig = dfg.iplot(kind='scatter', asFigure=True)
         py.offline.plot(fig,filename=filename+'.html')
         

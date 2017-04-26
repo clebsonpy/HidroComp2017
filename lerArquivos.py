@@ -81,21 +81,28 @@ class LerXls():
         return dadosV.astype(float)
 
 class LerHdf():
-    def __init__(self, caminho, nomeArquivo, lat, lon):
+    def __init__(self, caminho, nomeArquivo):
         self.caminho = caminho
         self.nomeArquivo = nomeArquivo
-        self.lon = lon
-        self.lat = lat
+#        self.lon = lon
+#        self.lat = lat
         
     def lerHdf(self):
-        arq = gdal.Open(os.path.join(self.caminho, self.nomeArquivo+'.HDF'))
+        arq = gdal.Open(os.path.join(self.caminho, self.nomeArquivo+'.HDF5'))
+        #3B-HHR-CS-36W7S34W8S.MS.MRG.3IMERG.20160424-S000000-E002959.0001.V04A.HDF5
+        dataAux = self.nomeArquivo.split('.')[4].split('-')
+        data = pd.to_datetime(dataAux[0]+dataAux[2].replace('E',''))
+#        print(type(data))
         subData = arq.GetSubDatasets()
-        precip = gdal.Open(subData[0][0])
+        precip = gdal.Open(subData[5][0])
         df = pd.DataFrame(precip.ReadAsArray())
-        df1 = df.iloc[range(((180+self.lon[0])*4)-1,(180+self.lon[1])*4), range(((50+self.lat[0])*4)-1,(50+self.lat[1])*4)]
+#        df1 = df.iloc[range(((180+self.lon[0])*4)-1,(180+self.lon[1])*4), range(((50+self.lat[0])*4)-1,(50+self.lat[1])*4)]
         lista=[]
-        for i in df1:
-            for k in df1[i].index:
-                lista.append(pd.Series(df1[i][k], name=(((i+1)*0.25)-50,((k+1)*0.25)-180)))
-        dfa = pd.DataFrame(lista).T
-        return dfa
+        index = []
+        for i in df:
+            for k in df[i].index:
+                lista.append(df[i][k])
+                index.append((i,k))
+        
+        dfa = pd.DataFrame(pd.Series(lista, index=index, name=data))
+        return dfa.T
