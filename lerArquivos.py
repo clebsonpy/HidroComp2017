@@ -86,23 +86,34 @@ class LerHdf():
         self.nomeArquivo = nomeArquivo
 #        self.lon = lon
 #        self.lat = lat
-
+    def listaLonLat(self, arq):
+        inf = arq.GetMetadata()['Grid_GridHeader'].split(';\n')[3:8]
+        resol = float(inf[0].split('=')[1])
+        lonLat = list(map(lambda x: round(float(x.split('=')[1]), 1), inf[1:]))
+        lonLat.sort()
+        lon, lat = [lonLat[i*2:2+i*2:] for i in range(2)]
+        lon = [lon[0]+0.05, lon[1]-0.05]
+        lat = [lat[0]+0.05, lat[1]-0.05]
+        listaLon = np.arange(lon[0], lon[1], resol)
+        listaLat = np.arange(lat[0], lat[1], resol)
+        return listaLon, listaLat
+    
     def lerHdf(self):
         arq = gdal.Open(os.path.join(self.caminho, self.nomeArquivo+'.HDF5'))
 #        3B-HHR-CS-36W7S34W8S.MS.MRG.3IMERG.20160424-S000000-E002959.0001.V04A.HDF5
         dataAux = self.nomeArquivo.split('.')[4].split('-')
-        data = pd.to_datetime(dataAux[0]+dataAux[2].replace('E',''))
-#        print(type(data))
+        data = pd.to_datetime(dataAux[0]+dataAux[1].replace('S',''))
         subData = arq.GetSubDatasets()
         precip = gdal.Open(subData[5][0])
         df = pd.DataFrame(precip.ReadAsArray())
 #        df1 = df.iloc[range(((180+self.lon[0])*4)-1,(180+self.lon[1])*4), range(((50+self.lat[0])*4)-1,(50+self.lat[1])*4)]
+        listLon, listLat = self.listaLonLat(arq)
         lista=[]
         index = []
         for i in df:
             for k in df[i].index:
                 lista.append(df[i][k])
-                index.append((i,k))
+                index.append((str(listLat[i]),str(listLon[k])))
 
         dfa = pd.DataFrame(pd.Series(lista, index=index, name=data))
         return dfa.T
@@ -127,7 +138,7 @@ class LerSam():
         for linha in listaLinhas:
             if cont > 0:
                 dataHora = pd.to_datetime(self.nomeArquivo)
-                dado.append(linha[3])
+                dado.append(float(linha[3]))
                 index.append((linha[1], linha[2]))
             cont +=1
         dfa = pd.DataFrame(pd.Series(dado, index=index, name=dataHora))
