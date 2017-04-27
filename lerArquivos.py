@@ -43,7 +43,7 @@ class LerTxt():
             count += 1
             if count == 1:
                 #indiceCodigo = linha.index("EstacaoCodigo")
-                inicioVa = linha.index("Vazao01")
+                inicioVa = linha.index("Chuva01")
                 indiceData = linha.index("Data")
                 indiceCons = linha.index("NivelConsistencia")
             elif count >= 2:
@@ -55,7 +55,7 @@ class LerTxt():
                 indiceVa = [i for i in range(inicioVa, inicioVa+dias)]
                 listaVazao = [np.NaN if linha[i] == "" else float(linha[i].replace(",",".")) for i in indiceVa]
                 dadosVazao.append(pd.Series(listaVazao, index=index, name=self.nomeArquivo))
-
+#                print(dadosVazao)
         dadosV = pd.DataFrame(pd.concat(dadosVazao))
         return dadosV
 

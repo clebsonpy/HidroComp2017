@@ -14,9 +14,9 @@ import graficos as gfc
 if __name__ == "__main__":
     ini = timeit.default_timer()
 #    caminho = os.getcwd()
-    caminho = ('/home/clebson/Área de Trabalho/Dados_Nasa/')
+    caminho = ('/home/clebson/Área de Trabalho/AIA/')
 #    caminho = ('/home/clebson/Área de Trabalho/Kleverton/2015-07-02/')
-    dados = arq.Arquivos(caminho, fonte='NASA').lerArquivos()
+    dados = arq.Arquivos(caminho, fonte='ANA', consistencia=1).lerArquivos()
 #    caract = crt.Caracteristicas(dados, '49370000')
 #    mesInicioAnoHidro = caract.mesInicioAnoHidrologico()
 #    prep = pr.Prepara('49370000')    

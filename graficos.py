@@ -11,7 +11,7 @@ import caracteristica as crt
 import prepara as pp
 import plotly as py
 import plotly.figure_factory as FF
-#import cufflinks as cf
+import cufflinks as cf
 
 class Graficos(pp.Prepara):
     def __init__(self, dados, nPosto=None, nomeArq=None):
