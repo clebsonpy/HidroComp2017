@@ -23,6 +23,10 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerHdf, la.LerSam):
                 if ext == tipos[self.fonte]:
                     listaArquivo.append(nome)
         return listaArquivo
+    
+    def testParal(self, nome):
+        self.nomeArquivo = nome
+        return self.lerArquivos()
 
     def lerArquivos(self):
         if self.nomeArquivo == None:
@@ -30,16 +34,16 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerHdf, la.LerSam):
 
         if type(self.nomeArquivo) == list:
             dadosVazao = pd.DataFrame()
-            x = 0
-            tam = len(self.nomeArquivo)
-            for nome in self.nomeArquivo:
-                x += 1
-                print(x, 'de', tam)
-                self.nomeArquivo = nome
-                if len(dadosVazao) > 0:
-                    dadosVazao = dadosVazao.combine_first(self.lerArquivos())
-                else:
-                    dadosVazao = self.lerArquivos()
+#            x = 0
+#            tam = len(self.nomeArquivo)
+#            for nome in self.nomeArquivo:
+#                x += 1
+#                print(x, 'de', tam)
+#                self.nomeArquivo = nome
+#                if len(dadosVazao) > 0:
+#                    dadosVazao = dadosVazao.combine_first(self.lerArquivos())
+#                else:
+#                    dadosVazao = self.lerArquivos()
             return dadosVazao
 
         else:

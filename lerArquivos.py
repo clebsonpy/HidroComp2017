@@ -90,10 +90,11 @@ class LerHdf():
         inf = arq.GetMetadata()['Grid_GridHeader'].split(';\n')[3:8]
         resol = float(inf[0].split('=')[1])
         lonLat = list(map(lambda x: round(float(x.split('=')[1]), 1), inf[1:]))
-        lonLat.sort()
-        lon, lat = [lonLat[i*2:2+i*2:] for i in range(2)]
-        lon = [lon[0]+0.05, lon[1]-0.05]
-        lat = [lat[0]+0.05, lat[1]-0.05]
+        lat, lon = [lonLat[i*2:2+i*2:] for i in range(2)]
+        lat.sort()
+        lon.sort()
+        lon = [lon[0]+0.05, lon[1]]
+        lat = [lat[0]+0.05, lat[1]]
         listaLon = np.arange(lon[0], lon[1], resol)
         listaLat = np.arange(lat[0], lat[1], resol)
         return listaLon, listaLat
@@ -111,7 +112,7 @@ class LerHdf():
         lista=[]
         index = []
         for i in df:
-            for k in df[i].index:
+            for k in df.index:
                 lista.append(df[i][k])
                 index.append((str(listLat[i]),str(listLon[k])))
 
