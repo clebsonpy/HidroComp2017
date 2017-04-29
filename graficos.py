@@ -14,31 +14,28 @@ import plotly.figure_factory as FF
 import cufflinks as cf
 
 class Graficos(pp.Prepara):
-    def __init__(self, dados, nPosto=None, nomeArq=None):
+    def __init__(self, dados, nPosto=None):
         self.dados = dados
         self.nPosto = nPosto
-        self.nomeArq = nomeArq
         
     def plotlyCredenciais(self, username, apiKey):
         py.tools.set_credentials_file(username=username, api_key= apiKey)
         py.tools.set_config_file(world_readable=True, sharing='public')
     
-    def plotGantt(self, dfGantt, filename):
+    def plotGantt(self):
+        dfGantt = self.gantt(self.dados)
         fig = FF.create_gantt(dfGantt, index_col='IndexCol', colors = ['#000000', '#858585'], group_tasks=True, bar_width=0.475)
-        py.offline.plot(fig, filename=filename+'.html')
+        py.offline.plot(fig, filename='DiagramadeGantt.html')
     
-    def plotHidroPorAno(self, filename):
-        dfg = self.grupoAnoHidro(self.dados)
+    def plotHidroPorAno(self, mesIniAno = (1, 'JAN')):
+        dfg = self.grupoAnoHidro(self.dados, mesIniAno)
         fig = dfg.iplot(kind='scatter', asFigure=True)
-        py.offline.plot(fig,filename=filename+'.html')
+        py.offline.plot(fig, filename='GraficoAnual'+self.nPosto+'.html')
+    
+    def plotHidro(self):
+        if self.nPosto == None:
+            fig = self.dados.iplot(kind='scatter', asFigure=True)
+        else:
+            fig = self.dados[self.nPosto].iplot(kind='scatter', asFigure=True)
         
-if __name__ == "__main__":
-
-    caminho = os.getcwd()
-    dadosVazao = arq.Arquivos(caminho, 'ANA').lerArquivos(consistencia=2)
-    periodos = crt.Caracteristicas(dadosVazao, '49370000').periodoSemFalhas()
-    dfGantt = pp.Prepara().gantt(periodos, '49370000')
-    #plotGantt(dfGantt, filename='ganttChart')
-    mesHidro, mesHidroAbr = crt.Caracteristicas(dadosVazao).mesInicioAnoHidrologico()
-    #grupos, dfg = pre.grupoAnoHidro(dadosVazao, mesHidroAbr)
-    Graficos().plotGantt(dfGantt, filename='ganttChart')
+        py.offline.plot(fig, filename='hidrograma'+'.html')

@@ -23,7 +23,7 @@ class Caracteristicas():
             self.dadosVazao = dadosVazao
         
     #Ano hidrologico
-    def mesInicioAnoHidrologico(self, nPosto):
+    def mesInicioAnoHidrologico(self):
         mediaMes = [self.dadosVazao[self.nPosto].loc[self.dadosVazao.index.month==i].mean() for i in range(1,13)]
         mesHidro = 1 + mediaMes.index(min(mediaMes))
         mesHidroAbr = cal.month_abbr[mesHidro]

@@ -7,25 +7,28 @@ Created on Thu Mar 16 02:05:38 2017
 """
 import pandas as pd
 import numpy as np
+import caracteristica as crct
 
 class Prepara():
-    def __init__(self, nPosto):
+    def __init__(self, nPosto = None):
         self.nPosto = nPosto
     
-    def gantt(self, psf):
+    def gantt(self, dados):
         df = pd.DataFrame(columns=['Task', 'Start', 'Finish', 'Description', 'IndexCol'])
         cont = 0
-        color = 0
-        n = 1
-        for j in psf.index:
-            df.set_value(index = cont, col = 'Task', value = self.nPosto)
-            df.set_value(index = cont, col = 'Description', value = self.nPosto + ' - %s' % j)
-            df.set_value(index = cont, col = 'IndexCol', value = color)
-            df.set_value(index = cont, col = 'Start', value = psf['Inicio'].loc[j])
-            df.set_value(index = cont, col = 'Finish', value = psf['Fim'].loc[j])
-            cont += 1
-            color += (100*n)
-            n *= -1
+        for i in dados:
+            color = 0
+            n = 1
+            psf = crct.Caracteristicas(dados, i).periodoSemFalhas()
+            for j in psf.index:
+                df.set_value(index = cont, col = 'Task', value = i)
+                df.set_value(index = cont, col = 'Description', value = i + ' - %s' % j)
+                df.set_value(index = cont, col = 'IndexCol', value = color)
+                df.set_value(index = cont, col = 'Start', value = psf['Inicio'].loc[j])
+                df.set_value(index = cont, col = 'Finish', value = psf['Fim'].loc[j])
+                cont += 1
+                color += (100*n)
+                n *= -1
         return df
     
     

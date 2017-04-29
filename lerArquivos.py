@@ -16,7 +16,8 @@ class LerTxt():
     def __init__(self, caminho, nomeArquivo):
         self.caminho = caminho
         self.nomeArquivo = nomeArquivo
-
+        
+        
     def linhas(self):
         listaLinhas = []
         with open(os.path.join(self.caminho, self.nomeArquivo+".TXT"), encoding="Latin-1") as arquivo:
@@ -34,8 +35,10 @@ class LerTxt():
         listaCons = [int(consistencia)]*dias
         indexMult = list(zip(*[listaData, listaCons]))
         return pd.MultiIndex.from_tuples(indexMult, names=["Data", "Consistencia"])
+    
 
     def lerTxt(self):
+        tipos = {'FLUVIOMÉTRICO': "Vazao01", 'PLUVIOMÉTRICO': "Chuva01"}
         listaLinhas = self.linhas()
         dadosVazao = []
         count = 0
@@ -43,7 +46,7 @@ class LerTxt():
             count += 1
             if count == 1:
                 #indiceCodigo = linha.index("EstacaoCodigo")
-                inicioVa = linha.index("Chuva01")
+                inicioVa = linha.index(tipos[self.tipoDado])
                 indiceData = linha.index("Data")
                 indiceCons = linha.index("NivelConsistencia")
             elif count >= 2:
@@ -116,8 +119,8 @@ class LerHdf():
                 lista.append(df[i][k])
                 index.append((str(listLat[i]),str(listLon[k])))
 
-        dfa = pd.DataFrame(pd.Series(lista, index=index, name=data))
-        return dfa.T
+        serie = pd.Series(lista, index=index, name=data)
+        return serie
 
 class LerSam():
     def __init__(self, caminho, nomeArquivo):
@@ -142,5 +145,5 @@ class LerSam():
                 dado.append(float(linha[3]))
                 index.append((linha[1], linha[2]))
             cont +=1
-        dfa = pd.DataFrame(pd.Series(dado, index=index, name=dataHora))
-        return dfa.T
+        serie = pd.Series(dado, index=index, name=dataHora)
+        return serie

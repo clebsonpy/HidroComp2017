@@ -1,50 +1,48 @@
 import os
 import pandas as pd
 import lerArquivos as la
+import multiprocessing as mp
 
 class Arquivos(la.LerTxt, la.LerXls, la.LerHdf, la.LerSam):
 
-    def __init__(self, caminho, nomeArquivo=None, consistencia=2, fonte=None):
+    def __init__(self, caminho, fonte, nomeArquivo=None, consistencia=2, tipoDado='fluviométrico'):
         self.caminho = caminho
-        self.fonte = fonte
+        self.fonte = fonte.upper()
         self.nomeArquivo = nomeArquivo
         self.consistencia = consistencia
-#        self.lon = lon
-#        self.lat = lat
+        self.tipoDado = tipoDado.upper()
 
 
     def listaArq(self):
-        listaDir = os.listdir(self.caminho)
-        tipos = {'ONS':'.xls', 'ANA':'.TXT', 'NASA':'.HDF5', 'CEMADEN':'.sam'}
+        listaDir = os.listdir(self.caminho) #Lista tudo q contêm na pasta
+        tipos = {'ONS':'.xls', 'ANA':'.TXT', 'NASA':'.HDF5', 'CEMADEN':'.sam'} #Dic de ext referênte a cada fonte 
         listaArquivo = []
         for arquivo in listaDir:
             if os.path.isfile(os.path.join(self.caminho, arquivo)):
-                nome, ext = os.path.splitext(arquivo)
-                if ext == tipos[self.fonte]:
+                nome, ext = os.path.splitext(arquivo) # Separa nome e ext do arquivo
+                if ext == tipos[self.fonte]: #compara ext do arquivo com a da fonte
                     listaArquivo.append(nome)
+        if len(listaArquivo) == 1:
+            listaArquivo = listaArquivo[0]
         return listaArquivo
     
-    def testParal(self, nome):
+    def lerArquivos(self, nome=None):
         self.nomeArquivo = nome
-        return self.lerArquivos()
-
-    def lerArquivos(self):
         if self.nomeArquivo == None:
             self.nomeArquivo = self.listaArq()
 
         if type(self.nomeArquivo) == list:
-            dadosVazao = pd.DataFrame()
-#            x = 0
-#            tam = len(self.nomeArquivo)
-#            for nome in self.nomeArquivo:
-#                x += 1
-#                print(x, 'de', tam)
-#                self.nomeArquivo = nome
-#                if len(dadosVazao) > 0:
-#                    dadosVazao = dadosVazao.combine_first(self.lerArquivos())
-#                else:
-#                    dadosVazao = self.lerArquivos()
-            return dadosVazao
+            p = mp.Pool(mp.cpu_count()*4) # Inicia multiprocessos
+            listaDfs = p.map(self.lerArquivos, self.nomeArquivo) #Executa multiprocessos
+            p.close() #finaliza multiprocessos
+            if self.fonte == 'ANA':
+                dadosVazao = pd.DataFrame()
+                for df in listaDfs:
+                    dadosVazao = dadosVazao.combine_first(df)
+                return dadosVazao.sort_index()
+            else:
+                dadosVazao = pd.DataFrame(listaDfs)
+                return dadosVazao.sort_index()
 
         else:
             if self.fonte == 'ANA':
