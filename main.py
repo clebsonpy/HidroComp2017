@@ -14,7 +14,7 @@ import graficos as gfc
 
 if __name__ == "__main__":
     ini = timeit.default_timer()
-    caminho = os.getcwd() + "Dados_Nasa\"
+    caminho = os.getcwd() + "Dados_Nasa/"
 #    caminho = ('/home/clebson/Área de Trabalho/Nasa/')
 #    caminho = ('C:\\Users\\franciely\\Desktop\\Dados_Nasa\\')
     dados = arq.Arquivos(caminho, fonte='ANA').lerArquivos()
@@ -23,7 +23,7 @@ if __name__ == "__main__":
 #    psf = caract.periodoSemFalhas()
 #    picos, eventos = caract.pulsosDuracao(vazaoLimiar=0.25, evento='estiagem')
 #    prep = pr.Prepara()
-#    dfGantt = prep.gantt(dados)    
+#    dfGantt = prep.gantt(dados)
 #    dadosPre = prep.grupoAnoHidro(dados, mesInicioAnoHidro)
 #    grafico = gfc.Graficos(dados, '49370000')
 #    grafico.plotHidroPorAno(mesInicioAnoHidro)
