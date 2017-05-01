@@ -16,7 +16,7 @@ if __name__ == "__main__":
     ini = timeit.default_timer()
     caminho = os.getcwd()
 #    caminho = ('/home/clebson/Área de Trabalho/Nasa/')
-#    caminho = ('/home/clebson/Área de Trabalho/Kleverton/2015-07-02/')
+    caminho = ('C:\\Users\\franciely\\Desktop\\Dados_Nasa\\')
     dados = arq.Arquivos(caminho, fonte='ANA').lerArquivos()
 #    caract = crt.Caracteristicas(dados, '49370000')
 #    mesInicioAnoHidro = caract.mesInicioAnoHidrologico()
