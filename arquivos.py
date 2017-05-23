@@ -26,6 +26,7 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerHdf, la.LerSam):
             listaArquivo = listaArquivo[0]
         return listaArquivo
     
+    
     def lerArquivos(self, nome=None):
         self.nomeArquivo = nome
         if self.nomeArquivo == None:
