@@ -6,6 +6,7 @@ Created on Thu Mar 16 03:42:07 2017
 @author: clebson
 """
 import os
+import pandas as pd
 import arquivos as arq
 import caracteristica as crt
 import prepara as pp
@@ -39,3 +40,15 @@ class Graficos(pp.Prepara):
             fig = self.dados[self.nPosto].iplot(kind='scatter', asFigure=True)
         
         py.offline.plot(fig, filename='hidrograma'+'.html')
+
+class Arquivo():
+    def __init__(self, df):
+        self.df = df
+        
+    def excel(self, nomeArquivo):
+        writer = pd.ExcelWriter('%s.xlsx' % nomeArquivo)
+        self.df.to_excel(writer)
+        writer.save()
+    
+    def json(self, nomeArquivo):
+        self.df.to_json('%s.json' % nomeArquivo)
