@@ -10,16 +10,17 @@ import numpy as np
 import caracteristica as crct
 
 class Prepara():
-    def __init__(self, nPosto = None):
+    def __init__(self, dados, nPosto = None):
+        self.dados = dados
         self.nPosto = nPosto
     
-    def gantt(self, dados):
+    def gantt(self):
         df = pd.DataFrame(columns=['Task', 'Start', 'Finish', 'Description', 'IndexCol'])
         cont = 0
-        for i in dados:
+        for i in self.dados:
             color = 0
             n = 1
-            psf = crct.Caracteristicas(dados, i).periodoSemFalhas()
+            psf = crct.Caracteristicas(self.dados, i).periodoSemFalhas()
             for j in psf.index:
                 df.set_value(index = cont, col = 'Task', value = i)
                 df.set_value(index = cont, col = 'Description', value = i + ' - %s' % j)
@@ -32,8 +33,8 @@ class Prepara():
         return df
     
     
-    def grupoAnoHidro(self, dados, mesHidro):
-        grupos = dados[self.nPosto].groupby(pd.Grouper(freq='AS-%s' % mesHidro[1]))
+    def grupoAnoHidro(self, mesHidro):
+        grupos = self.dados[self.nPosto].groupby(pd.Grouper(freq='AS-%s' % mesHidro[1]))
         #frameGrafico = pd.DataFrame()
         lista = []
         for key, dado in grupos:
@@ -45,3 +46,22 @@ class Prepara():
         frameGrafico = pd.DataFrame(lista)
         #frameGrafico.drop_duplicates(keep='last', inplace=True)
         return frameGrafico.T
+    
+    def mapaPrecipitacao(self):
+        df = self.dados.groupby(pd.Grouper(freq='A')).sum().to_period().T
+        dics = {'Lon':[], 'Lat':[]}
+        for i in df.index:
+            dics['Lat'].append(float(i[0]))
+            dics['Lon'].append(float(i[1]))
+        
+        df2 = pd.DataFrame(dics)
+        df2 = df2.combine_first(pd.DataFrame(pd.Series(df['2016'].values, name='2016')))
+        
+        return df2
+        
+        
+        
+        
+        
+        
+        

@@ -52,3 +52,11 @@ class Arquivo():
     
     def json(self, nomeArquivo):
         self.df.to_json('%s.json' % nomeArquivo)
+        
+class Mapas(pp.Prepara):
+    def __init__(self, df):
+        self.dados = df
+    
+    def precipitacao(self):
+        dad = self.mapaPrecipitacao()
+        print(dad)

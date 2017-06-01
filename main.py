@@ -10,19 +10,20 @@ import timeit
 import arquivos as arq
 import caracteristica as crt
 import prepara as pr
-import graficos as gfc
+import imprimir as impr
 
 if __name__ == "__main__":
     ini = timeit.default_timer()
-    caminho = os.getcwd()
-#    caminho = ('/home/clebson/Área de Trabalho/Kleverton/')
+#    caminho = os.getcwd()
+    caminho = ('/home/clebson/Área de Trabalho/Nasa_GPM_3')
 #    caminho = ('C:\\Users\\franciely\\Desktop\\Dados_Nasa\\')
-    dados = arq.Arquivos(caminho, fonte='ANA').lerArquivos()
-    caract = crt.Caracteristicas(dados, '49370000')
-    mesInicioAnoHidro = caract.mesInicioAnoHidrologico()
-    psf = caract.periodoSemFalhas()
-    picos, eventos = caract.pulsosDuracao(vazaoLimiar=0.25, evento='estiagem')
-    picos.head()
+    dados = arq.Arquivos(caminho, fonte='NASA').lerArquivos()
+    imprimi = impr.Mapas(dados)
+    imprimi.precipitacao()
+#    caract = crt.Caracteristicas(dados, '49370000')
+#    mesInicioAnoHidro = caract.mesInicioAnoHidrologico()
+#    psf = caract.periodoSemFalhas()
+#    picos, eventos = caract.pulsosDuracao(vazaoLimiar=0.25, evento='estiagem')
 #    grafico = gfc.Graficos(dados, '49370000')
 #    grafico.plotHidroPorAno(mesInicioAnoHidro)
 #    grafico.plotGantt()
