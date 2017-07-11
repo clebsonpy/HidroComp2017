@@ -14,6 +14,7 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerHdf, la.LerSam):
 
 
     def listaArq(self):
+        print(self.caminho)
         listaDir = os.listdir(self.caminho) #Lista tudo q contêm na pasta
         tipos = {'ONS':'.xls', 'ANA':'.TXT', 'NASA':'.HDF5', 'CEMADEN':'.sam'} #Dic de ext referênte a cada fonte 
         listaArquivo = []
