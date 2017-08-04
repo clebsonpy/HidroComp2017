@@ -6,6 +6,8 @@ Created on Wed Mar 15 22:57:24 2017
 @author: clebson
 """
 import pandas as pd
+import numpy as np
+from datetime import date
 import calendar as cal
 
 class Caracteristicas():
@@ -48,15 +50,17 @@ class Caracteristicas():
         dic = {'Inicio': listaInicio, 'Fim': listaFim}
         return pd.DataFrame(dic)
 
-    def pulsosDuracao(self, vazaoLimiar=0.75, evento='cheia'):
-        limiar = self.dadosVazao[self.nPosto].quantile(vazaoLimiar)
+    def parcialEvento(self, quartilLimiar, evento):
+        limiar = self.dadosVazao[self.nPosto].quantile(quartilLimiar)
         if evento == 'cheia':
-            eventos = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] >= limiar, self.nPosto])
+            return self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] >= limiar, self.nPosto])
         elif evento == 'estiagem':
-            eventos = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] <= limiar, self.nPosto])
+            return self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] <= limiar, self.nPosto])
         else:
             return 'Evento erro!'
-        
+
+    def pulsosDuracao(self, quartilLimiar=0.75, evento='cheia'):
+        eventos = self.parcialEvento(quartilLimiar, evento)
         grupoEventos = eventos.groupby(pd.Grouper(freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
         maxEvento = {'Ano': [], 'Data':[], 'Vazao':[], 'Inicio':[], 'Fim':[], 'Duracao':[]}
         for key, serie in grupoEventos:
@@ -84,3 +88,50 @@ class Caracteristicas():
         evento.set_value(evento.loc[evento.Duracao.isnull()].index, 'Duracao', 0)
         
         return eventosPicos, evento
+    
+    def ChecksTypeRate(self, value1, value2, typeRate):
+        if typeRate == 'rise':
+            return value1 < value2
+        elif typeRate == 'fall':
+            return value1 > value2
+    
+    def rate(self, tipo, quartilLimiar, evento):
+        eventos = self.parcialEvento(quartilLimiar, evento)
+        grupoEventos = eventos.groupby(pd.Grouper(freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
+        rate = {'Data1':[], 'Vazao1': [], 'Data2':[], 'Vazao2': [], 'Taxa':[]}
+        rise = {'Ano': [], 'Ascensao': [], 'Media': []}
+        boo = False
+        for key, serie in grupoEventos:
+            d1 = None
+            cont = 0
+            values = []
+            for i in serie.loc[serie.values == True].index:
+                if d1 != None:
+                    if self.ChecksTypeRate(self.dadosVazao.loc[d1, self.nPosto], 
+                                           self.dadosVazao.loc[i, self.nPosto], tipo):
+                        boo = True
+                        rate['Data1'].append(d1)
+                        rate['Data2'].append(i)
+                        rate['Vazao1'].append(self.dadosVazao.loc[d1, self.nPosto])
+                        rate['Vazao2'].append(self.dadosVazao.loc[i, self.nPosto])
+                        rate['Taxa'].append(self.dadosVazao.loc[i, self.nPosto] - self.dadosVazao.loc[d1, self.nPosto])
+                        values.append(self.dadosVazao.loc[i, self.nPosto] - self.dadosVazao.loc[d1, self.nPosto])
+                    else:
+                        if boo:
+                            mean = np.mean(values)
+                            cont += 1
+                            boo = False
+            
+                d1 = i
+            if boo:
+                mean = np.mean(values)
+                cont += 1
+                boo = False
+                
+            rise['Ano'].append(key.year)
+            rise['Ascensao'].append(cont)
+            rise['Media'].append(mean)
+        
+        ratesDf = pd.DataFrame(rate)
+        riseDf = pd.DataFrame(rise)
+        return ratesDf, riseDf

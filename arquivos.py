@@ -3,7 +3,7 @@ import pandas as pd
 import lerArquivos as la
 import multiprocessing as mp
 
-class Arquivos(la.LerTxt, la.LerXls, la.LerHdf, la.LerSam):
+class Arquivos(la.LerTxt, la.LerXls, la.LerSam):
 
     def __init__(self, caminho, fonte, nomeArquivo=None, consistencia=2, tipoDado='fluviométrico'):
         self.caminho = caminho
@@ -33,8 +33,8 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerHdf, la.LerSam):
         if self.nomeArquivo == None:
             self.nomeArquivo = self.listaArq()
 
-        if type(self.nomeArquivo) == list:
-            p = mp.Pool(mp.cpu_count()*4) # Inicia multiprocessos
+        elif type(self.nomeArquivo) == list:
+            p = mp.Pool(1) # Inicia multiprocessos
             listaDfs = p.map(self.lerArquivos, self.nomeArquivo) #Executa multiprocessos
             p.close() #finaliza multiprocessos
             if self.fonte == 'ANA':
@@ -54,7 +54,7 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerHdf, la.LerSam):
                 return dados
             elif self.fonte == 'ONS':
                 return self.lerXls()
-            elif self.fonte == 'NASA':
-                return self.lerHdf()
+#            elif self.fonte == 'NASA':
+#                return self.lerHdf()
             elif self.fonte == 'CEMADEN':
                 return self.lerSam()

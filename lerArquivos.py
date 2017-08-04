@@ -8,7 +8,7 @@ Created on Wed Mar 29 10:15:34 2017
 import os
 import pandas as pd
 import numpy as np
-import gdal
+#import gdal
 import calendar as ca
 
 
@@ -83,6 +83,7 @@ class LerXls():
 
         return dadosV.astype(float)
 
+"""
 class LerHdf():
     def __init__(self, caminho, nomeArquivo):
         self.caminho = caminho
@@ -121,6 +122,7 @@ class LerHdf():
 
         serie = pd.Series(lista, index=index, name=data)
         return serie
+"""
 
 class LerSam():
     def __init__(self, caminho, nomeArquivo):
