@@ -64,34 +64,48 @@ class Graficos(pp.Prepara):
         py.offline.plot(fig, filename='gráficos\%s' % nomeGrafico + '.html')
     
     def plotHidroPorAno(self, mesIniAno = (1, 'JAN')):
-        dfg = self.grupoAnoHidro(mesIniAno)
+        df = self.grupoAnoHidro(mesIniAno)
         
+        z = []
         y = []
-        for i in dfg:
-            y.append(dfg[i].values)
-        
-        traceHidro = go.Data[go.Scatter(
-            y=y,
-            name = i,
-            opacity = 1,
-            marker=go.Marker(
-                    color= dfg.columns,
-                    colorbar=go.ColorBar(
-                        title='Colorbar'
-                    ),
-                    colorscale='Viridis'
-            ))]
-        
+        x = []
+        for i in df:
+            for j in df[i].index:
+                y.append(df[i][j])
+                z.append(int(i))
+                x.append(j)
+                    
+        trace1 = go.Scatter(
+            x = x,
+            y = y,
+            mode='markers',
+            marker=dict(
+                size='3',
+                color = z, #set color equal to a variable
+                colorscale='Jet',
+                showscale=True,
+            ),
+            
+        )
+        data = [trace1]
         bandxaxis = go.XAxis(
+            title = "Mês",
             tickformat = "%b",
             )
         
+        bandyaxis = go.YAxis(
+            title = "Vazão(m³/s)",
+            )
+        
         layout = dict(
-                title = "Hidrograma Ano",
-                xaxis=bandxaxis)
-            
-        fig = dict(data=traceHidro, layout=layout)
-        py.offline.plot(fig, filename='gráficos\GraficoAnual'+self.nPosto+'.html')
+                title = "Hidrograma",
+                xaxis=bandxaxis,
+                yaxis=bandyaxis,
+                width=800, height=640,
+                autosize = False)
+        
+        fig = dict(data=data, layout=layout)
+        py.offline.plot(fig, filename='gráficos\Hidrograma_Ano_%s' % self.nPosto + ".html")
     
     def plotHidro(self):
         if self.nPosto == None:
