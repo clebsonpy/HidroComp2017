@@ -38,31 +38,37 @@ class Graficos(pp.Prepara):
             traceHidro = go.Scatter(x=self.dados.index,
                 y=self.dados[self.nPosto],
                 name = self.nPosto,
-                line = dict(color = '#17BECF'),
+                line = dict(color = '#17BECF',
+                            width = 1),
                 opacity = 1)
             traceLimiar = go.Scatter(x=self.dados.index,
                 y=[limiar]*len(self.dados),
                 name = "Limiar",
-                line = dict(color = '#858585'),
+                line = dict(color = '#858585',
+                             width = 1),
                 opacity = 1)
             pointInicio = go.Scatter(x=dfPicos.Inicio,
                 y=self.dados[self.nPosto].loc[dfPicos.Inicio],
                 name = "Inicio do Evento",
                 mode='markers',
-                marker=dict(color='#835AF1'),
-                opacity = 0.8)
+                marker=dict(color='#835AF1',
+                             size = 5),
+                opacity = 1)
             pointFim = go.Scatter(x=dfPicos.Fim,
                 y=self.dados[self.nPosto].loc[dfPicos.Fim],
                 name = "Fim do Evento",
                 mode='markers',
-                marker=dict(color='#FF0000'),
-                opacity = 0.8)
+                marker=dict(color='#FF0000',
+                             size = 5),
+                opacity = 1)
             data = [traceHidro, traceLimiar, pointInicio, pointFim]
             layout = dict(
-                title = "Parcial")
+                title = "Hidrograma Início e Fim de Eventos (%s)" % nomeGrafico.title())
             fig = dict(data=data, layout=layout)        
         py.offline.plot(fig, filename='gráficos\%s' % nomeGrafico + '.html')
     
+#    def plotPolar(self):
+        
     def plotHidroPorAno(self, mesIniAno = (1, 'JAN')):
         df = self.grupoAnoHidro(mesIniAno)
         

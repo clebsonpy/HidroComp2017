@@ -68,10 +68,10 @@ class LerXls():
         self.nomeArquivo = nomeArquivo
 
     def lerXls(self):
-
         arq = os.path.join(self.caminho, self.nomeArquivo+'.xls')
         dadosV = pd.read_excel(arq, shettname='Total', header=0, skiprows=5, index_col=0)
         dadosV.drop(np.NaN, inplace=True)
+        
         aux = []
         dic = {'jan':'1', 'fev':'2', 'mar':'3', 'abr':'4', 'mai':'5', 'jun':'6', 'jul':'7', 'ago':'8', 'set':'9', 'out':'10', 'nov':'11', 'dez':'12'}
         for i in dadosV.index:

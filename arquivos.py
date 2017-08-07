@@ -33,7 +33,7 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerSam):
         if self.nomeArquivo == None:
             self.nomeArquivo = self.listaArq()
 
-        elif type(self.nomeArquivo) == list:
+        if type(self.nomeArquivo) == list:
             p = mp.Pool(1) # Inicia multiprocessos
             listaDfs = p.map(self.lerArquivos, self.nomeArquivo) #Executa multiprocessos
             p.close() #finaliza multiprocessos
@@ -47,12 +47,14 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerSam):
                 return dadosVazao.sort_index()
 
         else:
+            
             if self.fonte == 'ANA':
                 dados = self.lerTxt()
                 dados = dados.iloc[dados.index.isin([self.consistencia], level=1)]
                 dados.reset_index(level=1, drop=True, inplace=True)
                 return dados
             elif self.fonte == 'ONS':
+                print(self.nomeArquivo)
                 return self.lerXls()
 #            elif self.fonte == 'NASA':
 #                return self.lerHdf()
