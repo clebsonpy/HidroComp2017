@@ -52,24 +52,37 @@ class Caracteristicas():
 
     def parcialEvento(self, quartilLimiar, evento):
         limiar = self.dadosVazao[self.nPosto].quantile(quartilLimiar)
+        median = self.dadosVazao[self.nPosto].median()
         if evento == 'cheia':
-            return self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] >= limiar, self.nPosto])
+            eventoL = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] >= limiar, self.nPosto])
+            eventoM = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] >= median, self.nPosto])
+            return eventoL, eventoM
         elif evento == 'estiagem':
-            return self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] <= limiar, self.nPosto])
+            eventoL = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] <= limiar, self.nPosto])
+            eventoM = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] <= median, self.nPosto])
+            return eventoL, eventoM
         else:
             return 'Evento erro!'
 
     def pulsosDuracao(self, quartilLimiar=0.75, evento='cheia'):
-        eventos = self.parcialEvento(quartilLimiar, evento)
-        grupoEventos = eventos.groupby(pd.Grouper(freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
+        eventosL, eventosM = self.parcialEvento(quartilLimiar, evento)
+        grupoEventos = eventosL.groupby(pd.Grouper(freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
         maxEvento = {'Ano': [], 'Data':[], 'Vazao':[], 'Inicio':[], 'Fim':[], 'Duracao':[]}
+        iAntes = eventosL.index[1]
+        lowLimiar = False
+        dados = {'Data':[], 'Vazao':[]}
         for key, serie in grupoEventos:
-            dados = {'Data':[], 'Vazao':[]}
+            
             for i in serie.index:
                 if serie.loc[i]:
+                    dados['Vazao'].append(self.dadosVazao.loc[iAntes, self.nPosto])
+                    dados['Data'].append(iAntes)
+                    lowLimiar = True
+                elif lowLimiar:
                     dados['Vazao'].append(self.dadosVazao.loc[i, self.nPosto])
                     dados['Data'].append(i)
-                elif len(dados['Vazao']) > 0:
+                    lowLimiar = False
+                elif len(dados['Vazao']) > 0 and not eventosM.loc[i]:
                     maxEvento['Ano'].append(key.year)
                     maxEvento['Data'].append(dados['Data'][dados['Vazao'].index(max(dados['Vazao']))])
                     maxEvento['Vazao'].append(max(dados['Vazao']))
@@ -77,6 +90,8 @@ class Caracteristicas():
                     maxEvento['Fim'].append(dados['Data'][-1])
                     maxEvento['Duracao'].append(len(dados['Data']))
                     dados = {'Data':[], 'Vazao':[]}
+                    
+                iAntes = i
         eventosPicos = pd.DataFrame(maxEvento)
         
         dic = {'Ano':[], 'Duracao':[], 'nPulsos':[]}
