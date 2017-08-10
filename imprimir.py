@@ -28,6 +28,91 @@ class Graficos(pp.Prepara):
         dfGantt = self.gantt(self.dados)
         fig = FF.create_gantt(dfGantt, index_col='IndexCol', colors = ['#000000', '#858585'], group_tasks=True, bar_width=0.475)
         py.offline.plot(fig, filename='DiagramadeGantt.html')
+    
+    def plotDuraçãoPulso(self, eventos, tipo):
+        rateQ = go.Scatter(x=eventos.Ano,
+                y=eventos.Duracao,
+                mode='markers+lines',
+                marker=dict(color='red',
+                             size = 3),
+                opacity = 1)
+        data = [rateQ]
+        bandxaxis = go.XAxis(
+                title = "Anos",
+                )
+        bandyaxis = go.YAxis(
+                title = "Duração Média",
+                )
+        layout = dict(
+            title = "Duração Média de Eventos de %s" % tipo.title(),
+            xaxis = bandxaxis,
+            yaxis = bandyaxis)
+        fig = dict(data=data, layout=layout)
+        py.offline.plot(fig, filename='gráficos//Duracao' + tipo + '.html')
+    
+    def plotNPulsos(self, eventos, tipo):
+        rateQ = go.Scatter(x=eventos.Ano,
+                y=eventos.nPulsos,
+                mode='markers+lines',
+                marker=dict(color='red',
+                             size = 3),
+                opacity = 1)
+        data = [rateQ]
+        bandxaxis = go.XAxis(
+                title = "Anos",
+                )
+        bandyaxis = go.YAxis(
+                title = "N° de Pulsos",
+                )
+        layout = dict(
+            title = "Número de Pulsos de %s" % tipo,
+            xaxis = bandxaxis,
+            yaxis = bandyaxis)
+        fig = dict(data=data, layout=layout)
+        py.offline.plot(fig, filename='gráficos//NPulsos' + tipo + '.html')
+    
+    def plotReversoes(self, dfRise, dfFall):
+        rateQ = go.Scatter(x=dfRise.Ano,
+                y=dfRise["rise"] + dfFall["fall"],
+                mode='markers+lines',
+                marker=dict(color='red',
+                             size = 3),
+                opacity = 1)
+        data = [rateQ]
+        bandxaxis = go.XAxis(
+                title = "Anos",
+                )
+        bandyaxis = go.YAxis(
+                title = "N° Reversões",
+                )
+        layout = dict(
+            title = "Número de reversões anuais de vazões",
+            xaxis = bandxaxis,
+            yaxis = bandyaxis)
+        fig = dict(data=data, layout=layout)
+        py.offline.plot(fig, filename='gráficos//reversões' + '.html')
+    
+    def plotRate(self, dfRate, typeRate):
+        
+        rateQ = go.Scatter(x=dfRate.Ano,
+                y=dfRate["Media"],
+                mode='markers+lines',
+                marker=dict(color='red',
+                             size = 3),
+                opacity = 1)
+        data = [rateQ]
+        bandxaxis = go.XAxis(
+                title = "Anos",
+                )
+        bandyaxis = go.YAxis(
+                title = "Taxa Média (m³/s)",
+                )
+        layout = dict(
+            title = "Taxa de %s de vazão" % typeRate.title(),
+            xaxis = bandxaxis,
+            yaxis = bandyaxis)
+        fig = dict(data=data, layout=layout)
+        py.offline.plot(fig, filename='gráficos//%s' % typeRate + '.html')
         
     def plotHidroParcial(self, dfPicos, quartilLimiar, nomeGrafico):
         limiar = self.dados[self.nPosto].quantile(quartilLimiar)
@@ -75,7 +160,6 @@ class Graficos(pp.Prepara):
             fig = dict(data=data, layout=layout)        
         py.offline.plot(fig, filename='gráficos\%s' % nomeGrafico + '.html')
     
-#    def plotPolar(self):
         
     def plotHidroPorAno(self, mesIniAno = (1, 'JAN')):
         df = self.grupoAnoHidro(mesIniAno)
