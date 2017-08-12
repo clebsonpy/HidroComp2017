@@ -63,11 +63,23 @@ class Caracteristicas():
             return eventoL, eventoM
         else:
             return 'Evento erro!'
+        
+    def daysJulian(self, reducao):
+        if reducao.title() == "Maxima":
+            data = pd.DatetimeIndex(self.dadosVazao.groupby(pd.Grouper(freq='A')).idxmax()[self.nPosto].values)
+        elif reducao.title() == "Minima":
+            data = pd.DatetimeIndex(self.dadosVazao.groupby(pd.Grouper(freq='A')).idxmax()[self.nPosto].values)
+        
+        dfDayJulian = pd.DataFrame(list(map(int, data.strftime("%j"))), index = data)
+        dayJulian = dfDayJulian.mean()[0]
+        return dfDayJulian, dayJulian
+        
 
     def pulsosDuracao(self, quartilLimiar=0.75, evento='cheia'):
         eventosL, eventosM = self.parcialEvento(quartilLimiar, evento)
         grupoEventos = eventosL.groupby(pd.Grouper(freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
-        maxEvento = {'Ano': [], 'Data':[], 'Vazao':[], 'Inicio':[], 'Fim':[], 'Duracao':[]}
+        maxEvento = {'Ano': [], 'Vazao':[], 'Inicio':[], 'Fim':[], 'Duracao':[]}
+        Data = []
         iAntes = eventosL.index[1]
         lowLimiar = False
         dados = {'Data':[], 'Vazao':[]}
@@ -82,9 +94,9 @@ class Caracteristicas():
                     dados['Vazao'].append(self.dadosVazao.loc[i, self.nPosto])
                     dados['Data'].append(i)
                     lowLimiar = False
-                elif len(dados['Vazao']) > 0 and not eventosM.loc[i]:
+                elif len(dados['Vazao']) > 0 and (not eventosM.loc[i] or i == pd.to_datetime("%s0831" % i.year)):
                     maxEvento['Ano'].append(key.year)
-                    maxEvento['Data'].append(dados['Data'][dados['Vazao'].index(max(dados['Vazao']))])
+                    Data.append(dados['Data'][dados['Vazao'].index(max(dados['Vazao']))])
                     maxEvento['Vazao'].append(max(dados['Vazao']))
                     maxEvento['Inicio'].append(dados['Data'][0])
                     maxEvento['Fim'].append(dados['Data'][-1])
@@ -92,9 +104,9 @@ class Caracteristicas():
                     dados = {'Data':[], 'Vazao':[]}
                     
                 iAntes = i
-        eventosPicos = pd.DataFrame(maxEvento)
+        eventosPicos = pd.DataFrame(maxEvento, index = Data)
         
-        dic = {'Ano':[], 'Duracao':[], 'nPulsos':[]}
+        dic = {'Ano':[], 'Duracao':[], 'nPulsos':[], }
         for i, serie in grupoEventos:
             dic['Ano'].append(i.year)
             dic['Duracao'].append(eventosPicos.Duracao.loc[eventosPicos.Ano == i.year].mean())

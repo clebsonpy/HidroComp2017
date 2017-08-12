@@ -48,7 +48,7 @@ class Graficos(pp.Prepara):
             xaxis = bandxaxis,
             yaxis = bandyaxis)
         fig = dict(data=data, layout=layout)
-        py.offline.plot(fig, filename='gráficos//Duracao' + tipo + '.html')
+        py.offline.plot(fig, filename='gráficos/Duracao' + tipo + '.html')
     
     def plotNPulsos(self, eventos, tipo):
         rateQ = go.Scatter(x=eventos.Ano,
@@ -69,7 +69,7 @@ class Graficos(pp.Prepara):
             xaxis = bandxaxis,
             yaxis = bandyaxis)
         fig = dict(data=data, layout=layout)
-        py.offline.plot(fig, filename='gráficos//NPulsos' + tipo + '.html')
+        py.offline.plot(fig, filename='gráficos/NPulsos' + tipo + '.html')
     
     def plotReversoes(self, dfRise, dfFall):
         rateQ = go.Scatter(x=dfRise.Ano,
@@ -90,7 +90,7 @@ class Graficos(pp.Prepara):
             xaxis = bandxaxis,
             yaxis = bandyaxis)
         fig = dict(data=data, layout=layout)
-        py.offline.plot(fig, filename='gráficos//reversões' + '.html')
+        py.offline.plot(fig, filename='gráficos/reversões' + '.html')
     
     def plotRate(self, dfRate, typeRate):
         
@@ -112,7 +112,7 @@ class Graficos(pp.Prepara):
             xaxis = bandxaxis,
             yaxis = bandyaxis)
         fig = dict(data=data, layout=layout)
-        py.offline.plot(fig, filename='gráficos//%s' % typeRate + '.html')
+        py.offline.plot(fig, filename='gráficos/%s' % typeRate + '.html')
         
     def plotHidroParcial(self, dfPicos, quartilLimiar, nomeGrafico):
         limiar = self.dados[self.nPosto].quantile(quartilLimiar)
@@ -158,7 +158,7 @@ class Graficos(pp.Prepara):
             layout = dict(
                 title = "Hidrograma Início e Fim de Eventos (%s)" % nomeGrafico.title())
             fig = dict(data=data, layout=layout)        
-        py.offline.plot(fig, filename='gráficos\%s' % nomeGrafico + '.html')
+        py.offline.plot(fig, filename='gráficos/%s' % nomeGrafico + '.html')
     
         
     def plotHidroPorAno(self, mesIniAno = (1, 'JAN')):
@@ -203,7 +203,7 @@ class Graficos(pp.Prepara):
                 autosize = False)
         
         fig = dict(data=data, layout=layout)
-        py.offline.plot(fig, filename='gráficos\Hidrograma_Ano_%s' % self.nPosto + ".html")
+        py.offline.plot(fig, filename='gráficos/Hidrograma_Ano_%s' % self.nPosto + ".html")
     
     def plotHidro(self):
         if self.nPosto == None:
