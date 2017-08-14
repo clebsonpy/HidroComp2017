@@ -13,14 +13,16 @@ import calendar as cal
 class Caracteristicas():
     def __init__(self, dadosVazao, nPosto, dataInicio = None, dataFim = None):
         self.nPosto = nPosto.upper()
-        self.dataInicio = pd.to_datetime(dataInicio, dayfirst=True)
-        self.dataFim = pd.to_datetime(dataFim, dayfirst=True)
-        if self.dataInicio == None and self.dataFim == None:
+        if dataInicio != None and dataFim != None:
+            self.dataInicio = pd.to_datetime(dataInicio, dayfirst=True)
+            self.dataFim = pd.to_datetime(dataFim, dayfirst=True)
             self.dadosVazao = dadosVazao.loc[self.dataInicio:self.dataFim]
-        elif self.dataInicio == None:
-            self.dadosVazao = dadosVazao.loc[:self.dataFim]
-        elif self.dataFim == None:
+        elif dataInicio != None:
+            self.dataInicio = pd.to_datetime(dataInicio, dayfirst=True)
             self.dadosVazao = dadosVazao.loc[self.dataInicio:]
+        elif dataFim != None:
+            self.dataFim = pd.to_datetime(dataFim, dayfirst=True)
+            self.dadosVazao = dadosVazao.loc[:self.dataFim]
         else:
             self.dadosVazao = dadosVazao
         

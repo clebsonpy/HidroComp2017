@@ -67,7 +67,7 @@ class LerXls():
         self.caminho = caminho
         self.nomeArquivo = nomeArquivo
 
-    def lerXls(self):
+    def lerOns(self):
         arq = os.path.join(self.caminho, self.nomeArquivo+'.xls')
         dadosV = pd.read_excel(arq, shettname='Total', header=0, skiprows=5, index_col=0)
         dadosV.drop(np.NaN, inplace=True)
@@ -82,6 +82,9 @@ class LerXls():
         dadosV.columns = codiColuna
 
         return dadosV.astype(float)
+    
+    def lerChesf(self):
+        pass
 
 """
 class LerHdf():

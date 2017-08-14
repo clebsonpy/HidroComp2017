@@ -32,6 +32,21 @@ class Prepara():
                 n *= -1
         return df
     
+    def periodsSpells(self, picos, mesHidro):
+        df = pd.DataFrame(columns=['Task', 'Start', 'Finish', 'Description', 'IndexCol'])
+        cont = 0
+        for i in picos.index:
+            df.set_value(index = cont, col = 'Task', value = picos['Ano'].loc[i])
+            df.set_value(index = cont, col = 'Description', value = '%s - %s' % (picos['Ano'].loc[i], cont))
+            df.set_value(index = cont, col = 'IndexCol', value = 0)
+            inicio = picos['Inicio'].loc[i]
+            fim = picos['Fim'].loc[i]
+            dataInicio =  pd.to_datetime('%s/%s/%s' % (inicio.month, inicio.day, 1999)) if inicio.month >= mesHidro[0] else pd.to_datetime('%s/%s/%s' % (inicio.month, inicio.day, 2000))
+            dataFim = pd.to_datetime('%s/%s/%s' % (fim.month, fim.day, 1999)) if fim.month >= mesHidro[0] else pd.to_datetime('%s/%s/%s' % (fim.month, fim.day, 2000))
+            df.set_value(index = cont, col = 'Start', value = dataInicio)
+            df.set_value(index = cont, col = 'Finish', value = dataFim)
+            cont += 1
+        return df
     
     def grupoAnoHidro(self, mesHidro):
         grupos = self.dados[self.nPosto].groupby(pd.Grouper(freq='AS-%s' % mesHidro[1]))
@@ -58,10 +73,3 @@ class Prepara():
         df2 = df2.combine_first(pd.DataFrame(pd.Series(df['2016'].values, name='2016')))
         
         return df2
-        
-        
-        
-        
-        
-        
-        

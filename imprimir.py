@@ -20,14 +20,24 @@ class Graficos(pp.Prepara):
         self.dados = dados
         self.nPosto = nPosto
         
-    def plotlyCredenciais(self, username, apiKey):
+    def plotlyCredenciais(self, username = 'clebsonpy', apiKey = 'qBKNP6BAO2mmPsaOTGq8'):
         py.tools.set_credentials_file(username=username, api_key= apiKey)
         py.tools.set_config_file(world_readable=True, sharing='public')
     
-    def plotGantt(self):
-        dfGantt = self.gantt(self.dados)
-        fig = FF.create_gantt(dfGantt, index_col='IndexCol', colors = ['#000000', '#858585'], group_tasks=True, bar_width=0.475)
-        py.offline.plot(fig, filename='DiagramadeGantt.html')
+    def plotGantt(self, dfGantt):
+        fig = FF.create_gantt(dfGantt, colors = '#000000', group_tasks=True, title= "Eventos de Cheias")
+        fig['layout']['xaxis']['tickformat'] = '%b'
+        fig['layout']['xaxis']['type'] =  "date"
+        fig['layout']['xaxis']['showgrid'] = True
+        fig['layout']['xaxis']['range'] = ['9/1/1999', '8/31/2000']
+        fig['layout']['xaxis']['tick0'] = pd.to_datetime('9/1/1999')
+        fig['layout']['xaxis']['ticklen'] = pd.to_datetime('8/31/2000')
+        fig['layout']['xaxis']['autorange'] = False
+        fig['layout']['xaxis']['autotick'] = False
+        fig['layout']['xaxis']['dtick'] = "M1"
+        fig['layout']['xaxis']['title'] = 'Mês'
+        fig['layout']['yaxis']['title'] = 'Anos'
+        py.offline.plot(fig, filename='gráficos/floodSpells.html')
     
     def plotDuraçãoPulso(self, eventos, tipo):
         rateQ = go.Scatter(x=eventos.Ano,

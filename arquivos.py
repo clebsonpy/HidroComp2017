@@ -16,7 +16,7 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerSam):
     def listaArq(self):
         print(self.caminho)
         listaDir = os.listdir(self.caminho) #Lista tudo q contêm na pasta
-        tipos = {'ONS':'.xls', 'ANA':'.TXT', 'NASA':'.HDF5', 'CEMADEN':'.sam'} #Dic de ext referênte a cada fonte 
+        tipos = {'ONS':'.xls', 'ANA':'.TXT', 'NASA':'.HDF5', 'CEMADEN':'.sam', 'CHESF': '.xls'} #Dic de ext referênte a cada fonte 
         listaArquivo = []
         for arquivo in listaDir:
             if os.path.isfile(os.path.join(self.caminho, arquivo)):
@@ -54,8 +54,9 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerSam):
                 dados.reset_index(level=1, drop=True, inplace=True)
                 return dados
             elif self.fonte == 'ONS':
-                print(self.nomeArquivo)
-                return self.lerXls()
+                return self.lerOns()   
+            elif self.fonte == 'CHESF':
+                return self.lerChesf()
 #            elif self.fonte == 'NASA':
 #                return self.lerHdf()
             elif self.fonte == 'CEMADEN':
