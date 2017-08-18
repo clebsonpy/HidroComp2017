@@ -10,6 +10,9 @@ import pandas as pd
 import arquivos as arq
 import caracteristica as crt
 import prepara as pp
+import matplotlib
+from matplotlib import pyplot as plt
+
 import plotly as py
 import plotly.graph_objs as go
 import plotly.figure_factory as FF
@@ -23,6 +26,43 @@ class Graficos(pp.Prepara):
     def plotlyCredenciais(self, username = 'clebsonpy', apiKey = 'qBKNP6BAO2mmPsaOTGq8'):
         py.tools.set_credentials_file(username=username, api_key= apiKey)
         py.tools.set_config_file(world_readable=True, sharing='public')
+    
+    def plotPolar(self, dfPolar):     
+        dicMes = {0: "Jan", 32: "Fev", 61: "Mar", 92: "Abr", 122: "Mai", 
+                  153: "Jun", 183: "Jul", 214: "Ago", 245: "Set", 275: "Out", 
+                  306: "Nov", 336: "Dez"}
+        
+        trace = go.Scatter(
+            r=dfPolar[self.nPosto], #Vazao
+            t=dfPolar.index, #Data
+            xaxis = dfPolar.index,
+            mode='markers',
+            name='Trial 1',
+            marker=dict(
+                color='rgb(27,158,119)',
+                size=110,
+                line=dict(
+                    color='white'
+                ),
+                opacity=0.7
+            )
+        )
+        data = [trace]
+        layout = go.Layout(
+            title='',
+            font=dict(
+                size=16
+            ),
+            orientation=270,
+        )
+        
+        fig = go.Figure(data=data, layout=layout)
+        fig['layout']['xaxis']['tickformat'] = '%b'
+        py.offline.plot(fig, filename='polar-area-chart')
+#        dicMes = {fDias*0: "Jan", fDias*32: "Fev", fDias*61: "Mar", 
+#                  fDias*92: "Abr", fDias*122: "Mai", fDias*153: "Jun"
+#                  fDias*183: "Jul", fDias*214: "Ago", fDias*245: "Set", 
+#                  fDias*275: "Out", fDias*306: "Nov", fDias*336: "Dez"}
     
     def plotGantt(self, dfGantt):
         fig = FF.create_gantt(dfGantt, colors = '#000000', group_tasks=True, title= "Eventos de Cheias")
@@ -183,18 +223,15 @@ class Graficos(pp.Prepara):
                 z.append(int(i))
                 x.append(j)
                     
-        trace1 = go.Scatter(
+        trace1 = go.Contour(
             x = x,
             y = y,
-            mode='markers',
-            marker=dict(
-                size='3',
-                color = z, #set color equal to a variable
-                colorscale='Jet',
-                showscale=True,
-            ),
+            z = z,
+            colorscale='Jet',
+            contours=dict(
+                    coloring='lines',
+        ),)
             
-        )
         data = [trace1]
         bandxaxis = go.XAxis(
             title = "Mês",
@@ -214,7 +251,7 @@ class Graficos(pp.Prepara):
         
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/Hidrograma_Ano_%s' % self.nPosto + ".html")
-    
+        
     def plotHidro(self):
         if self.nPosto == None:
             fig = self.dados.iplot(kind='scatter', asFigure=True)

@@ -7,6 +7,8 @@ Created on Thu Mar 16 02:05:38 2017
 """
 import pandas as pd
 import numpy as np
+import calendar
+import datetime
 import caracteristica as crct
 
 class Prepara():
@@ -30,6 +32,32 @@ class Prepara():
                 cont += 1
                 color += (100*n)
                 n *= -1
+        return df
+    
+    def julin(self, ano, dayJ):
+        diasMes = calendar.monthrange(ano, 2)[1]
+        if diasMes == 29:
+            data = datetime.datetime.strptime('2000%s' % dayJ, '%Y%j')
+        elif diasMes == 28:
+            if dayJ > 59:
+                data = datetime.datetime.strptime('2000%s' %(dayJ+1), '%Y%j')
+            else:
+                data = datetime.datetime.strptime('2000%s' % dayJ, '%Y%j')
+        return data
+        
+    def anualMaxPolar(self, dfMaxAnual):
+        dataJulian = list(map(int, pd.DatetimeIndex(dfMaxAnual.index.values).strftime("%j")))
+        dataJulInt = [i for i in dataJulian]
+        dfMaxAnual['DataJ'] = dataJulInt
+        data = []
+        for i in dfMaxAnual.index:
+            data.append(self.julin(i.year, dfMaxAnual.DataJ.loc[i]))
+        dfMaxAnual['Data'] = data
+        index = pd.date_range('2000-1-1', '2000-12-31')
+        df = pd.DataFrame(index = index)
+        df['XINGO'] = None
+        for i in dfMaxAnual.index:
+            df['XINGO'][dfMaxAnual.Data.loc[i]] = dfMaxAnual.XINGO.loc[i]
         return df
     
     def periodsSpells(self, picos, mesHidro):

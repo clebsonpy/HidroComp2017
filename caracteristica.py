@@ -66,6 +66,16 @@ class Caracteristicas():
         else:
             return 'Evento erro!'
         
+    def maxAnual(self):
+        gDados = self.dadosVazao.groupby(pd.Grouper(freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
+        maxVazao = gDados[self.nPosto].max().values
+        dataVazao = gDados[self.nPosto].idxmax().values
+        
+#        dic = {'Data': dataVazao, self.nPosto: maxVazao}
+        dfMax = pd.DataFrame(maxVazao, index=dataVazao, columns=[self.nPosto])
+        return dfMax
+        
+        
     def daysJulian(self, reducao):
         if reducao.title() == "Maxima":
             data = pd.DatetimeIndex(self.dadosVazao.groupby(pd.Grouper(freq='A')).idxmax()[self.nPosto].values)
