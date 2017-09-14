@@ -32,10 +32,10 @@ class Graficos(pp.Prepara):
                   153: "Jun", 183: "Jul", 214: "Ago", 245: "Set", 275: "Out", 
                   306: "Nov", 336: "Dez"}
         
+        print(dfPolar)
         trace = go.Scatter(
             r=dfPolar[self.nPosto], #Vazao
             t=dfPolar.index, #Data
-            xaxis = dfPolar.index,
             mode='markers',
             name='Trial 1',
             marker=dict(
@@ -48,7 +48,11 @@ class Graficos(pp.Prepara):
             )
         )
         data = [trace]
+        angularX = go.AngularAxis(
+                tickformat = '%b'
+                )
         layout = go.Layout(
+            angularaxis = angularX, 
             title='',
             font=dict(
                 size=16
@@ -57,7 +61,6 @@ class Graficos(pp.Prepara):
         )
         
         fig = go.Figure(data=data, layout=layout)
-        fig['layout']['xaxis']['tickformat'] = '%b'
         py.offline.plot(fig, filename='polar-area-chart')
 #        dicMes = {fDias*0: "Jan", fDias*32: "Fev", fDias*61: "Mar", 
 #                  fDias*92: "Abr", fDias*122: "Mai", fDias*153: "Jun"
