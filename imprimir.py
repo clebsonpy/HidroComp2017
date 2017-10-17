@@ -57,10 +57,10 @@ class Graficos(pp.Prepara):
             font=dict(
                 size=16
             ),
-            angularaxis=dict(
-                range=["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set",
-                  "Out", "Nov", "Dez"]
-            ),
+            #angularaxis=dict(
+            #    range=["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set",
+            #      "Out", "Nov", "Dez"]
+            #),
             orientation=270,
         )
 
