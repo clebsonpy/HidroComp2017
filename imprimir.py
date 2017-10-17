@@ -28,14 +28,13 @@ class Graficos(pp.Prepara):
         py.tools.set_config_file(world_readable=True, sharing='public')
     
     def plotPolar(self, dfPolar):     
-        dicMes = {0: "Jan", 32: "Fev", 61: "Mar", 92: "Abr", 122: "Mai", 
-                  153: "Jun", 183: "Jul", 214: "Ago", 245: "Set", 275: "Out", 
-                  306: "Nov", 336: "Dez"}
+        dicMes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", 
+                  "Out", "Nov", "Dez"]
+        dicNone = [None, None, None, None, None, None, None, None, None, None, None, None]
         
-        trace = go.Scatter(
+        trace1 = go.Scatter(
             r=dfPolar[self.nPosto], #Vazao
             t=dfPolar.index, #Data
-            xaxis = dfPolar.index,
             mode='markers',
             name='Trial 1',
             marker=dict(
@@ -47,17 +46,35 @@ class Graficos(pp.Prepara):
                 opacity=0.7
             )
         )
-        data = [trace]
+                
+        trace2 = go.Scatter(
+            r=dicNone, #Vazao
+            t=dicMes, #Data
+            mode='markers',
+            marker=dict(
+                color='rgb(27,158,119)',
+                size=110,
+                line=dict(
+                    color='white'
+                ),
+                opacity=0.7
+            )
+        )
+        
+        data = [trace2, trace1]
         layout = go.Layout(
             title='',
             font=dict(
                 size=16
             ),
+            angularaxis=dict(
+                range=["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", 
+                  "Out", "Nov", "Dez"]
+            ),
             orientation=270,
         )
         
         fig = go.Figure(data=data, layout=layout)
-        fig['layout']['xaxis']['tickformat'] = '%b'
         py.offline.plot(fig, filename='polar-area-chart')
 #        dicMes = {fDias*0: "Jan", fDias*32: "Fev", fDias*61: "Mar", 
 #                  fDias*92: "Abr", fDias*122: "Mai", fDias*153: "Jun"
@@ -122,8 +139,12 @@ class Graficos(pp.Prepara):
         py.offline.plot(fig, filename='gráficos/NPulsos' + tipo + '.html')
     
     def plotReversoes(self, dfRise, dfFall):
+        r = dfRise["Soma"] + dfFall["Soma"]
+        rMed = r.mean()
+        rCv = r.std()/rMed
+        print(r)
         rateQ = go.Scatter(x=dfRise.Ano,
-                y=dfRise["rise"] + dfFall["fall"],
+                y=dfRise["Soma"] + dfFall["Soma"],
                 mode='markers+lines',
                 marker=dict(color='red',
                              size = 3),
@@ -141,6 +162,7 @@ class Graficos(pp.Prepara):
             yaxis = bandyaxis)
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/reversões' + '.html')
+        return r, rMed, rCv
     
     def plotRate(self, dfRate, typeRate):
         
@@ -205,8 +227,18 @@ class Graficos(pp.Prepara):
                              size = 5),
                 opacity = 1)
             data = [traceHidro, traceLimiar, traceMedian, pointInicio, pointFim]
+            bandxaxis = go.XAxis(
+                    title = "Anos",
+            )
+        
+            bandyaxis = go.YAxis(
+                    title = "Vazão(m³/s)",
+            )
             layout = dict(
-                title = "Hidrograma Início e Fim de Eventos (%s)" % nomeGrafico.title())
+                title = "Hidrograma Início e Fim de Eventos (%s)" % nomeGrafico.title(),
+                xaxis=bandxaxis,
+                yaxis=bandyaxis,
+            )
             fig = dict(data=data, layout=layout)        
         py.offline.plot(fig, filename='gráficos/%s' % nomeGrafico + '.html')
     
@@ -223,13 +255,18 @@ class Graficos(pp.Prepara):
                 z.append(int(i))
                 x.append(j)
                     
-        trace1 = go.Contour(
+        trace1 = go.Scatter(
             x = x,
             y = y,
-            z = z,
-            colorscale='Jet',
-            contours=dict(
-                    coloring='lines',
+            mode = "markers",
+            marker=dict(
+                size = 3,
+                color = z,
+                colorscale='Jet',
+                showscale=True,
+                colorbar=dict(
+                title=""
+            )
         ),)
             
         data = [trace1]

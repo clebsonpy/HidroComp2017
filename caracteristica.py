@@ -77,14 +77,16 @@ class Caracteristicas():
         
         
     def daysJulian(self, reducao):
+        
         if reducao.title() == "Maxima":
-            data = pd.DatetimeIndex(self.dadosVazao.groupby(pd.Grouper(freq='A')).idxmax()[self.nPosto].values)
+            data = pd.DatetimeIndex(self.dadosVazao.groupby(pd.Grouper(freq='AS-%s' % self.mesInicioAnoHidrologico()[1])).idxmax()[self.nPosto].values)
         elif reducao.title() == "Minima":
-            data = pd.DatetimeIndex(self.dadosVazao.groupby(pd.Grouper(freq='A')).idxmax()[self.nPosto].values)
+            data = pd.DatetimeIndex(self.dadosVazao.groupby(pd.Grouper(freq='AS-%s' % self.mesInicioAnoHidrologico()[1])).idxmin()[self.nPosto].values)
         
         dfDayJulian = pd.DataFrame(list(map(int, data.strftime("%j"))), index = data)
-        dayJulian = dfDayJulian.mean()[0]
-        return dfDayJulian, dayJulian
+        dayJulianMedia = dfDayJulian.mean()[0]
+        dayJulianCv = dfDayJulian.std()[0]/dayJulianMedia
+        return dfDayJulian, dayJulianMedia, dayJulianCv
         
 
     def pulsosDuracao(self, quartilLimiar=0.75, evento='cheia'):
@@ -125,8 +127,11 @@ class Caracteristicas():
             dic['nPulsos'].append(len(eventosPicos.loc[eventosPicos.Ano == i.year]))
         evento = pd.DataFrame(dic)
         evento.set_value(evento.loc[evento.Duracao.isnull()].index, 'Duracao', 0)
-        
-        return eventosPicos, evento
+        durMedia = evento.Duracao.mean()
+        durCv = evento.Duracao.std()/durMedia
+        nPulsoMedio = evento.nPulsos.mean()
+        nPulsoCv = evento.nPulsos.std()/nPulsoMedio
+        return eventosPicos, evento, durMedia, durCv, nPulsoMedio, nPulsoCv
     
     def ChecksTypeRate(self, value1, value2, typeRate):
         if typeRate == 'rise':
@@ -135,10 +140,10 @@ class Caracteristicas():
             return value1 > value2
     
     def rate(self, tipo, quartilLimiar, evento):
-        eventos = self.parcialEvento(quartilLimiar, evento)
+        eventos = self.parcialEvento(quartilLimiar, evento)[0]
         grupoEventos = eventos.groupby(pd.Grouper(freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
         rate = {'Data1':[], 'Vazao1': [], 'Data2':[], 'Vazao2': [], 'Taxa':[]}
-        rise = {'Ano': [], 'Ascensao': [], 'Media': []}
+        rise = {'Ano': [], 'Soma': [], 'Media': []}
         boo = False
         for key, serie in grupoEventos:
             d1 = None
@@ -168,9 +173,13 @@ class Caracteristicas():
                 boo = False
                 
             rise['Ano'].append(key.year)
-            rise['Ascensao'].append(cont)
+            rise['Soma'].append(cont)
             rise['Media'].append(mean)
         
         ratesDf = pd.DataFrame(rate)
         riseDf = pd.DataFrame(rise)
-        return ratesDf, riseDf
+        riseMed = riseDf.Media.mean()
+        riseCv = riseDf.Media.std()/riseMed
+        nMedia = riseDf.Soma.mean()
+        nCv = riseDf.Soma.std()/nMedia
+        return ratesDf, riseDf, riseMed, riseCv, nMedia, nCv
