@@ -22,17 +22,18 @@ class Graficos(pp.Prepara):
     def __init__(self, dados, nPosto=None):
         self.dados = dados
         self.nPosto = nPosto
-        
+
     def plotlyCredenciais(self, username = 'clebsonpy', apiKey = 'qBKNP6BAO2mmPsaOTGq8'):
         py.tools.set_credentials_file(username=username, api_key= apiKey)
         py.tools.set_config_file(world_readable=True, sharing='public')
-    
-    def plotPolar(self, dfPolar):     
-        dicMes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", 
+
+    def plotPolar(self, dfPolar):
+        dicMes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set",
                   "Out", "Nov", "Dez"]
         dicNone = [None, None, None, None, None, None, None, None, None, None, None, None]
-        
-        trace1 = go.Scatter(
+
+        print(dfPolar)
+        trace = go.Scatter(
             r=dfPolar[self.nPosto], #Vazao
             t=dfPolar.index, #Data
             mode='markers',
@@ -46,41 +47,30 @@ class Graficos(pp.Prepara):
                 opacity=0.7
             )
         )
-                
-        trace2 = go.Scatter(
-            r=dicNone, #Vazao
-            t=dicMes, #Data
-            mode='markers',
-            marker=dict(
-                color='rgb(27,158,119)',
-                size=110,
-                line=dict(
-                    color='white'
-                ),
-                opacity=0.7
-            )
-        )
-        
-        data = [trace2, trace1]
+        data = [trace]
+        angularX = go.AngularAxis(
+                tickformat = '%b'
+                )
         layout = go.Layout(
+            angularaxis = angularX,
             title='',
             font=dict(
                 size=16
             ),
             angularaxis=dict(
-                range=["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", 
+                range=["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set",
                   "Out", "Nov", "Dez"]
             ),
             orientation=270,
         )
-        
+
         fig = go.Figure(data=data, layout=layout)
         py.offline.plot(fig, filename='polar-area-chart')
-#        dicMes = {fDias*0: "Jan", fDias*32: "Fev", fDias*61: "Mar", 
+#        dicMes = {fDias*0: "Jan", fDias*32: "Fev", fDias*61: "Mar",
 #                  fDias*92: "Abr", fDias*122: "Mai", fDias*153: "Jun"
-#                  fDias*183: "Jul", fDias*214: "Ago", fDias*245: "Set", 
+#                  fDias*183: "Jul", fDias*214: "Ago", fDias*245: "Set",
 #                  fDias*275: "Out", fDias*306: "Nov", fDias*336: "Dez"}
-    
+
     def plotGantt(self, dfGantt):
         fig = FF.create_gantt(dfGantt, colors = '#000000', group_tasks=True, title= "Eventos de Cheias")
         fig['layout']['xaxis']['tickformat'] = '%b'
@@ -95,7 +85,7 @@ class Graficos(pp.Prepara):
         fig['layout']['xaxis']['title'] = 'Mês'
         fig['layout']['yaxis']['title'] = 'Anos'
         py.offline.plot(fig, filename='gráficos/floodSpells.html')
-    
+
     def plotDuraçãoPulso(self, eventos, tipo):
         rateQ = go.Scatter(x=eventos.Ano,
                 y=eventos.Duracao,
@@ -116,7 +106,7 @@ class Graficos(pp.Prepara):
             yaxis = bandyaxis)
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/Duracao' + tipo + '.html')
-    
+
     def plotNPulsos(self, eventos, tipo):
         rateQ = go.Scatter(x=eventos.Ano,
                 y=eventos.nPulsos,
@@ -137,7 +127,7 @@ class Graficos(pp.Prepara):
             yaxis = bandyaxis)
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/NPulsos' + tipo + '.html')
-    
+
     def plotReversoes(self, dfRise, dfFall):
         r = dfRise["Soma"] + dfFall["Soma"]
         rMed = r.mean()
@@ -163,9 +153,9 @@ class Graficos(pp.Prepara):
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/reversões' + '.html')
         return r, rMed, rCv
-    
+
     def plotRate(self, dfRate, typeRate):
-        
+
         rateQ = go.Scatter(x=dfRate.Ano,
                 y=dfRate["Media"],
                 mode='markers+lines',
@@ -185,11 +175,11 @@ class Graficos(pp.Prepara):
             yaxis = bandyaxis)
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/%s' % typeRate + '.html')
-        
+
     def plotHidroParcial(self, dfPicos, quartilLimiar, nomeGrafico):
         limiar = self.dados[self.nPosto].quantile(quartilLimiar)
         median = self.dados[self.nPosto].median()
-        
+
         print(limiar)
         if self.nPosto == None:
             return 'Erro! forneça o n° do Posto'
@@ -230,7 +220,7 @@ class Graficos(pp.Prepara):
             bandxaxis = go.XAxis(
                     title = "Anos",
             )
-        
+
             bandyaxis = go.YAxis(
                     title = "Vazão(m³/s)",
             )
@@ -239,13 +229,13 @@ class Graficos(pp.Prepara):
                 xaxis=bandxaxis,
                 yaxis=bandyaxis,
             )
-            fig = dict(data=data, layout=layout)        
+            fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/%s' % nomeGrafico + '.html')
-    
-        
+
+
     def plotHidroPorAno(self, mesIniAno = (1, 'JAN')):
         df = self.grupoAnoHidro(mesIniAno)
-        
+
         z = []
         y = []
         x = []
@@ -254,7 +244,7 @@ class Graficos(pp.Prepara):
                 y.append(df[i][j])
                 z.append(int(i))
                 x.append(j)
-                    
+
         trace1 = go.Scatter(
             x = x,
             y = y,
@@ -268,54 +258,54 @@ class Graficos(pp.Prepara):
                 title=""
             )
         ),)
-            
+
         data = [trace1]
         bandxaxis = go.XAxis(
             title = "Mês",
             tickformat = "%b",
             )
-        
+
         bandyaxis = go.YAxis(
             title = "Vazão(m³/s)",
             )
-        
+
         layout = dict(
                 title = "Hidrograma",
                 xaxis=bandxaxis,
                 yaxis=bandyaxis,
                 width=800, height=640,
                 autosize = False)
-        
+
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/Hidrograma_Ano_%s' % self.nPosto + ".html")
-        
+
     def plotHidro(self):
         if self.nPosto == None:
             fig = self.dados.iplot(kind='scatter', asFigure=True)
         else:
             fig = self.dados[self.nPosto].iplot(kind='scatter', asFigure=True)
-        
+
         py.offline.plot(fig, filename='gráficos\hidrograma'+'.html')
 
 class Arquivo():
     def __init__(self, df):
         self.df = df
-        
+
     def excel(self, nomeArquivo):
         writer = pd.ExcelWriter('%s.xlsx' % nomeArquivo)
         self.df.to_excel(writer)
         writer.save()
-        
+
     def csv(self, nomeArquivo):
         self.df.to_csv('%s.csv' % nomeArquivo)
-    
+
     def json(self, nomeArquivo):
         self.df.to_json('%s.json' % nomeArquivo)
-        
+
 class Mapas(pp.Prepara):
     def __init__(self, df):
         self.dados = df
-    
+
     def precipitacao(self):
         data = [dict(
             type='scattergeo',
@@ -334,7 +324,7 @@ class Mapas(pp.Prepara):
             ),
             stream=stream_id,
             name="Plane")]
-        
+
         layout = dict(
             title = 'Busy Airplane Streaming',
             colorbar = False,
@@ -347,6 +337,6 @@ class Mapas(pp.Prepara):
                 countrycolor = "rgb(217, 217, 217)",
                 countrywidth = 0.5,
                 subunitwidth = 0.5),)
-        
+
         fig = dict( data=data, layout=layout )
         py.iplot( fig, validate=False, filename='geo-streaming2', auto_open=False, fileopt='extend')
