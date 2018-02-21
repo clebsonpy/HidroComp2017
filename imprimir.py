@@ -71,20 +71,23 @@ class Graficos(pp.Prepara):
 #                  fDias*183: "Jul", fDias*214: "Ago", fDias*245: "Set",
 #                  fDias*275: "Out", fDias*306: "Nov", fDias*336: "Dez"}
 
-    def plotGantt(self, dfGantt):
+    def plotGantt(self, dfGantt, tipo=None):
         fig = FF.create_gantt(dfGantt, colors = '#000000', group_tasks=True, title= "Eventos de Cheias")
-        fig['layout']['xaxis']['tickformat'] = '%b'
-        fig['layout']['xaxis']['type'] =  "date"
-        fig['layout']['xaxis']['showgrid'] = True
-        fig['layout']['xaxis']['range'] = ['9/1/1999', '8/31/2000']
-        fig['layout']['xaxis']['tick0'] = pd.to_datetime('9/1/1999')
-        fig['layout']['xaxis']['ticklen'] = pd.to_datetime('8/31/2000')
-        fig['layout']['xaxis']['autorange'] = False
-        fig['layout']['xaxis']['autotick'] = False
-        fig['layout']['xaxis']['dtick'] = "M1"
-        fig['layout']['xaxis']['title'] = 'Mês'
-        fig['layout']['yaxis']['title'] = 'Anos'
-        py.offline.plot(fig, filename='gráficos/floodSpells.html')
+        if tipo == 'spells':
+            fig['layout']['xaxis']['tickformat'] = '%b'
+            fig['layout']['xaxis']['type'] =  "date"
+            fig['layout']['xaxis']['showgrid'] = True
+            fig['layout']['xaxis']['range'] = ['9/1/1999', '8/31/2000']
+            fig['layout']['xaxis']['tick0'] = pd.to_datetime('9/1/1999')
+            fig['layout']['xaxis']['ticklen'] = pd.to_datetime('8/31/2000')
+            fig['layout']['xaxis']['autorange'] = False
+            fig['layout']['xaxis']['autotick'] = False
+            fig['layout']['xaxis']['dtick'] = "M1"
+            fig['layout']['xaxis']['title'] = 'Mês'
+            fig['layout']['yaxis']['title'] = 'Anos'
+            return py.offline.plot(fig, filename='gráficos/floodSpells.html')
+        
+        return py.offline.plot(fig, filename='gráficos/gantt.html')
 
     def plotDuraçãoPulso(self, eventos, tipo):
         rateQ = go.Scatter(x=eventos.Ano,

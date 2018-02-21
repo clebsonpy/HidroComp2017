@@ -58,7 +58,7 @@ class LerTxt():
                 indiceVa = [i for i in range(inicioVa, inicioVa+dias)]
                 listaVazao = [np.NaN if linha[i] == "" else float(linha[i].replace(",",".")) for i in indiceVa]
                 dadosVazao.append(pd.Series(listaVazao, index=index, name=self.nomeArquivo))
-#                print(dadosVazao)
+                
         dadosV = pd.DataFrame(pd.concat(dadosVazao))
         return dadosV
 

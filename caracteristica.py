@@ -100,7 +100,7 @@ class Caracteristicas():
         for key, serie in grupoEventos:
             
             for i in serie.index:
-                if serie.loc[i]:
+                if serieaIni.loc[i]:
                     dados['Vazao'].append(self.dadosVazao.loc[iAntes, self.nPosto])
                     dados['Data'].append(iAntes)
                     lowLimiar = True
@@ -183,3 +183,7 @@ class Caracteristicas():
         nMedia = riseDf.Soma.mean()
         nCv = riseDf.Soma.std()/nMedia
         return ratesDf, riseDf, riseMed, riseCv, nMedia, nCv
+    
+    def precipitacao_anual(self):
+        dados_anual = self.dadosVazao[self.nPosto].groupby(pd.Grouper(freq='A')).sum()
+        return dados_anual
