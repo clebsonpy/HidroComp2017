@@ -185,5 +185,5 @@ class Caracteristicas():
         return ratesDf, riseDf, riseMed, riseCv, nMedia, nCv
     
     def precipitacao_anual(self):
-        dados_anual = self.dadosVazao[self.nPosto].groupby(pd.Grouper(freq='A')).sum()
+        dados_anual = self.dadosVazao.groupby(pd.Grouper(freq='A')).sum().to_period()
         return dados_anual
