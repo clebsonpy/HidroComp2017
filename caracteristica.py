@@ -11,7 +11,7 @@ from datetime import date
 import calendar as cal
 
 class Caracteristicas():
-    def __init__(self, dadosVazao, nPosto, dataInicio = None, dataFim = None):
+    def __init__(self, dadosVazao, nPosto=None, dataInicio = None, dataFim = None):
         self.nPosto = nPosto.upper()
         if dataInicio != None and dataFim != None:
             self.dataInicio = pd.to_datetime(dataInicio, dayfirst=True)
