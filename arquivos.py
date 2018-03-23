@@ -5,7 +5,7 @@ import multiprocessing as mp
 
 class Arquivos(la.LerTxt, la.LerXls, la.LerSam):
 
-    def __init__(self, caminho, fonte, nomeArquivo=None, consistencia=1, tipoDado='fluviométrico'):
+    def __init__(self, caminho, fonte, nomeArquivo=None, consistencia=1, tipoDado='fluviometrico'):
         self.caminho = caminho
         self.fonte = fonte.upper()
         self.nomeArquivo = nomeArquivo
