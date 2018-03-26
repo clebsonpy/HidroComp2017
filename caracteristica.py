@@ -100,7 +100,7 @@ class Caracteristicas():
         for key, serie in grupoEventos:
             
             for i in serie.index:
-                if serieaIni.loc[i]:
+                if serie.loc[i]:
                     dados['Vazao'].append(self.dadosVazao.loc[iAntes, self.nPosto])
                     dados['Data'].append(iAntes)
                     lowLimiar = True

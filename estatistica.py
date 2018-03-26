@@ -19,8 +19,8 @@ class Bootstrap():
         
         
     def normal(self, media, desvio):
-        
-        
+       pass
+
 class Parametros():
     def __init__(self, dados, distribuicao):
         self.dados = dados

@@ -7,23 +7,27 @@ Created on Wed Mar 29 15:00:55 2017
 """
 import os
 import timeit
+
 import pandas as pd
+
 import arquivos as arq
 import caracteristica as crt
-import prepara as pr
 import imprimir as impr
+import prepara as pr
 
 if __name__ == "__main__":
     ini = timeit.default_timer()
 #    caminho = os.path.join(os.getcwd(), 'Dados_Chuva')
-#    dados = arq.Arquivos(caminho, fonte='ANA', tipoDado='pluviométrico').lerArquivos()
-    dados = pd.read_csv("dadosXingo.csv", index_col = 0, names=["Data", "XINGO"], parse_dates=True)
-    dados = crt.Caracteristicas(dados, 'XINGO')
-#    total_ano = caract.precipitacao_anual()
-    maxAnual = dados.maxAnual()
-    print(maxAnual)
-#    mesInicioAnoHidro = caract.mesInicioAnoHidrologico()
-#    pre = pr.Prepara(dados)
+#    dados = arq.Arquivos(caminho, fonte='ANA',
+#                         tipoDado='pluviométrico').lerArquivos()
+    dados = pd.read_csv("dadosXingo.csv", index_col=0, names=[
+                        "Data", "XINGO"], parse_dates=True)
+    dados = crt.Caracteristicas(dados, 'XINGO', dataInicio='1/1/1985')
+#    maxAnual = dadosCrt.maxAnual()
+#    print(maxAnual)
+    mesInicioAnoHidro = dados.mesInicioAnoHidrologico()
+#    print(mesInicioAnoHidro)
+#    pre = pr.Prepara(dados, 'XINGO')
 #    dfgantt = pre.gantt()
 #    x = pre.anualMaxPolar(maxAnual)
 #    dadosAno = pre.grupoAnoHidro(mesInicioAnoHidro)
@@ -33,9 +37,10 @@ if __name__ == "__main__":
 #    rateA, riseA = caract.rate(tipo='rise', quartilLimiar=0.75, evento='cheia')
 #    rateB, fallB = caract.rate(tipo='fall', quartilLimiar=0.75, evento='cheia')
 #    psf = caract.periodoSemFalhas()
-#    picos, eventos, dM, dCv, pM, pCv = caract.pulsosDuracao(quartilLimiar=0.25, evento='estiagem')
+    picos, eventos, dM, dCv, pM, pCv = dados.pulsosDuracao(
+        quartilLimiar=0.25, evento='estiagem')
 #    spells = pre.periodsSpells(picos, mesInicioAnoHidro)
-#    grafico = impr.Graficos(dados)
+    grafico = impr.Graficos(dados.dadosVazao, 'XINGO')
 #    grafico.plotPolar(x)
 #    grafico.plotDuraçãoPulso(eventos, 'cheia')
 #    grafico.plotNPulsos(eventos, 'estiagem')
@@ -43,7 +48,7 @@ if __name__ == "__main__":
 #    grafico.plotRate(riseA, 'Ascensão')
 #    grafico.plotRate(fallB, 'Recessão')
 #    grafico.plotHidroPorAno(mesInicioAnoHidro)
-#    grafico.plotHidroParcial(picos, quartilLimiar = 0.75, nomeGrafico='cheia')
+    grafico.plotHidroParcial(picos, quartilLimiar=0.75, nomeGrafico='cheia')
 #    grafico.plotGantt(dfgantt)
 #    grafico.plotHidro()
     fim = timeit.default_timer()

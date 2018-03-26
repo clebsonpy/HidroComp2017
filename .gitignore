@@ -2,3 +2,6 @@
 *.xls
 *.sqlite
 /venv
+/.idea
+/__pycache__
+/.vscode

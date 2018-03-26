@@ -57,19 +57,12 @@ class Graficos(pp.Prepara):
             font=dict(
                 size=16
             ),
-            #angularaxis=dict(
-            #    range=["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set",
-            #      "Out", "Nov", "Dez"]
-            #),
             orientation=270,
         )
 
         fig = go.Figure(data=data, layout=layout)
         py.offline.plot(fig, filename='polar-area-chart')
-#        dicMes = {fDias*0: "Jan", fDias*32: "Fev", fDias*61: "Mar",
-#                  fDias*92: "Abr", fDias*122: "Mai", fDias*153: "Jun"
-#                  fDias*183: "Jul", fDias*214: "Ago", fDias*245: "Set",
-#                  fDias*275: "Out", fDias*306: "Nov", fDias*336: "Dez"}
+
 
     def plotGantt(self, dfGantt, tipo=None):
         fig = FF.create_gantt(dfGantt, colors = '#000000', group_tasks=True, title= "Eventos de Cheias")
@@ -88,6 +81,7 @@ class Graficos(pp.Prepara):
             return py.offline.plot(fig, filename='gráficos/floodSpells.html')
         
         return py.offline.plot(fig, filename='gráficos/gantt.html')
+
 
     def plotDuraçãoPulso(self, eventos, tipo):
         rateQ = go.Scatter(x=eventos.Ano,
@@ -110,6 +104,7 @@ class Graficos(pp.Prepara):
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/Duracao' + tipo + '.html')
 
+
     def plotNPulsos(self, eventos, tipo):
         rateQ = go.Scatter(x=eventos.Ano,
                 y=eventos.nPulsos,
@@ -130,6 +125,7 @@ class Graficos(pp.Prepara):
             yaxis = bandyaxis)
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/NPulsos' + tipo + '.html')
+
 
     def plotReversoes(self, dfRise, dfFall):
         r = dfRise["Soma"] + dfFall["Soma"]
@@ -157,6 +153,7 @@ class Graficos(pp.Prepara):
         py.offline.plot(fig, filename='gráficos/reversões' + '.html')
         return r, rMed, rCv
 
+
     def plotRate(self, dfRate, typeRate):
 
         rateQ = go.Scatter(x=dfRate.Ano,
@@ -178,6 +175,7 @@ class Graficos(pp.Prepara):
             yaxis = bandyaxis)
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/%s' % typeRate + '.html')
+
 
     def plotHidroParcial(self, dfPicos, quartilLimiar, nomeGrafico):
         limiar = self.dados[self.nPosto].quantile(quartilLimiar)
@@ -282,13 +280,15 @@ class Graficos(pp.Prepara):
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/Hidrograma_Ano_%s' % self.nPosto + ".html")
 
+
     def plotHidro(self):
         if self.nPosto == None:
             fig = self.dados.iplot(kind='scatter', asFigure=True)
         else:
             fig = self.dados[self.nPosto].iplot(kind='scatter', asFigure=True)
 
-        py.offline.plot(fig, filename='gráficos\hidrograma'+'.html')
+        py.offline.plot(fig, filename='gráficos/hidrograma'+'.html')
+
 
 class Arquivo():
     def __init__(self, df):
@@ -304,6 +304,7 @@ class Arquivo():
 
     def json(self, nomeArquivo):
         self.df.to_json('%s.json' % nomeArquivo)
+
 
 class Mapas(pp.Prepara):
     def __init__(self, df):
