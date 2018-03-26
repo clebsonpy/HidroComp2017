@@ -52,20 +52,32 @@ class Caracteristicas():
         dic = {'Inicio': listaInicio, 'Fim': listaFim}
         return pd.DataFrame(dic)
 
-    def parcialEvento(self, quartilLimiar, evento):
+
+    def parcialEventoPercentil(self, quartilLimiar, evento):
         limiar = self.dadosVazao[self.nPosto].quantile(quartilLimiar)
-        median = self.dadosVazao[self.nPosto].median()
         if evento == 'cheia':
             eventoL = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] >= limiar, self.nPosto])
-            eventoM = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] >= median, self.nPosto])
-            return eventoL, eventoM
+            return eventoL
         elif evento == 'estiagem':
             eventoL = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] <= limiar, self.nPosto])
-            eventoM = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] <= median, self.nPosto])
-            return eventoL, eventoM
+            return eventoL
         else:
             return 'Evento erro!'
-        
+
+
+    def parcialEventoMediaMaxima(self, dfMaxima, tipoEvento):
+        limiar = dfMaxima[self.nPosto].mean()
+        print(limiar)
+        if tipoEvento == 'cheia':
+            eventoL = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] >= limiar, self.nPosto])
+            return eventoL
+        elif tipoEvento == 'estiagem':
+            eventoL = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] <= limiar, self.nPosto])
+            return eventoL
+        else:
+            return 'Evento erro!'
+
+
     def maxAnual(self):
         gDados = self.dadosVazao.groupby(pd.Grouper(freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
         maxVazao = gDados[self.nPosto].max().values
@@ -89,26 +101,55 @@ class Caracteristicas():
         return dfDayJulian, dayJulianMedia, dayJulianCv
         
 
-    def pulsosDuracao(self, quartilLimiar=0.75, evento='cheia'):
-        eventosL, eventosM = self.parcialEvento(quartilLimiar, evento)
+    def __criterioMediana(self, dados, index, tipoEvento):
+        median = self.dadosVazao[self.nPosto].median()
+        if tipoEvento == 'cheia':
+            eventos = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] >= median, self.nPosto])
+        elif tipoEvento == 'estiagem':
+            eventos = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] <= median, self.nPosto])
+        
+        if len(dados['Vazao']) > 0 and (not eventos.loc[index] or 
+                    index == pd.to_datetime("%s0831" % index.year)):
+            return True
+        else:
+            return False
+    
+
+    def __criterioMedia(self, dados, index, tipoEvento):
+        mean = self.dadosVazao[self.nPosto].mean()
+        if tipoEvento == 'cheia':
+            eventos = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] >= mean, self.nPosto])
+        elif tipoEvento == 'estiagem':
+            eventos = self.dadosVazao[self.nPosto].isin(self.dadosVazao.loc[self.dadosVazao[self.nPosto] <= mean, self.nPosto])
+        
+        if len(dados['Vazao']) > 0 and (not eventos.loc[index] or 
+                    index == pd.to_datetime("%s0831" % index.year)):
+            return True
+        else:
+            return False
+
+
+    def pulsosDuracao(self, quartilLimiar=0.75, tipoEvento='cheia'):
+        eventosL = self.parcialEventoMediaMaxima(self.maxAnual(), tipoEvento)
         grupoEventos = eventosL.groupby(pd.Grouper(freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
         maxEvento = {'Ano': [], 'Vazao':[], 'Inicio':[], 'Fim':[], 'Duracao':[]}
         Data = []
         iAntes = eventosL.index[1]
         lowLimiar = False
         dados = {'Data':[], 'Vazao':[]}
-        for key, serie in grupoEventos:
-            
+        for key, serie in grupoEventos:            
             for i in serie.index:
                 if serie.loc[i]:
                     dados['Vazao'].append(self.dadosVazao.loc[iAntes, self.nPosto])
                     dados['Data'].append(iAntes)
                     lowLimiar = True
                 elif lowLimiar:
+                    dados['Vazao'].append(self.dadosVazao.loc[iAntes, self.nPosto])
+                    dados['Data'].append(iAntes)
                     dados['Vazao'].append(self.dadosVazao.loc[i, self.nPosto])
-                    dados['Data'].append(i)
+                    dados['Data'].append(i)                   
                     lowLimiar = False
-                elif len(dados['Vazao']) > 0 and (not eventosM.loc[i] or i == pd.to_datetime("%s0831" % i.year)):
+                elif self.__criterioMedia(dados, i, tipoEvento):
                     maxEvento['Ano'].append(key.year)
                     Data.append(dados['Data'][dados['Vazao'].index(max(dados['Vazao']))])
                     maxEvento['Vazao'].append(max(dados['Vazao']))
@@ -187,3 +228,6 @@ class Caracteristicas():
     def precipitacao_anual(self):
         dados_anual = self.dadosVazao.groupby(pd.Grouper(freq='A')).sum().to_period()
         return dados_anual
+    
+    def acharLimiar(self, nPicos):
+        pass

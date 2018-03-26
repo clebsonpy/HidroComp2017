@@ -38,7 +38,8 @@ if __name__ == "__main__":
 #    rateB, fallB = caract.rate(tipo='fall', quartilLimiar=0.75, evento='cheia')
 #    psf = caract.periodoSemFalhas()
     picos, eventos, dM, dCv, pM, pCv = dados.pulsosDuracao(
-        quartilLimiar=0.25, evento='estiagem')
+        quartilLimiar=0.75, tipoEvento='cheia')
+    print(picos)
 #    spells = pre.periodsSpells(picos, mesInicioAnoHidro)
     grafico = impr.Graficos(dados.dadosVazao, 'XINGO')
 #    grafico.plotPolar(x)
@@ -48,7 +49,7 @@ if __name__ == "__main__":
 #    grafico.plotRate(riseA, 'Ascensão')
 #    grafico.plotRate(fallB, 'Recessão')
 #    grafico.plotHidroPorAno(mesInicioAnoHidro)
-    grafico.plotHidroParcial(picos, quartilLimiar=0.75, nomeGrafico='cheia')
+    grafico.plotHidroParcial(picos, dados.maxAnual(), nomeGrafico='cheia')
 #    grafico.plotGantt(dfgantt)
 #    grafico.plotHidro()
     fim = timeit.default_timer()
