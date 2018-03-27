@@ -177,12 +177,10 @@ class Graficos(pp.Prepara):
         py.offline.plot(fig, filename='gráficos/%s' % typeRate + '.html')
 
 
-    def plotHidroParcial(self, dfPicos, quartilLimiar, nomeGrafico):
+    def plotHidroParcial(self, dfPicos, limiar, nomeGrafico):
         #limiar = self.dados[self.nPosto].quantile(quartilLimiar)
-        limiar = quartilLimiar[self.nPosto].mean()
-        median = self.dados[self.nPosto].mean()
+        median = self.dados[self.nPosto].median()
 
-        print(limiar)
         if self.nPosto == None:
             return 'Erro! forneça o n° do Posto'
         else:
@@ -201,7 +199,7 @@ class Graficos(pp.Prepara):
             traceMedian = go.Scatter(x=self.dados.index,
                 y=[median]*len(self.dados),
                 name = "Mediana",
-                line = dict(color = 'yellow',
+                line = dict(color = 'red',
                              width = 1),
                 opacity = 1)
             pointInicio = go.Scatter(x=dfPicos.Inicio,
