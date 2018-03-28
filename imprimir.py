@@ -178,8 +178,8 @@ class Graficos(pp.Prepara):
 
 
     def plotHidroParcial(self, dfPicos, limiar, nomeGrafico):
-        #limiar = self.dados[self.nPosto].quantile(quartilLimiar)
-        median = self.dados[self.nPosto].median()
+        #limiar = self.dados[self.nPosto].quantile(limiar)
+        #median = self.dados[self.nPosto].median()
 
         if self.nPosto == None:
             return 'Erro! forneça o n° do Posto'
@@ -196,12 +196,12 @@ class Graficos(pp.Prepara):
                 line = dict(color = '#858585',
                              width = 1),
                 opacity = 1)
-            traceMedian = go.Scatter(x=self.dados.index,
+            """traceMedian = go.Scatter(x=self.dados.index,
                 y=[median]*len(self.dados),
                 name = "Mediana",
                 line = dict(color = 'red',
                              width = 1),
-                opacity = 1)
+                opacity = 1)"""
             pointInicio = go.Scatter(x=dfPicos.Inicio,
                 y=self.dados[self.nPosto].loc[dfPicos.Inicio],
                 name = "Inicio do Evento",
@@ -224,7 +224,7 @@ class Graficos(pp.Prepara):
                              size = 5),
                 opacity = 1)
 
-            data = [traceHidro, traceLimiar, traceMedian, pointInicio, 
+            data = [traceHidro, traceLimiar, pointInicio,
                     pointFim, pointVazao]
             bandxaxis = go.XAxis(
                     title = "Anos",

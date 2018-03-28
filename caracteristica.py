@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 from datetime import date
 import calendar as cal
+import statsmodels.api as sm
 
 
 class Caracteristicas():
@@ -59,11 +60,11 @@ class Caracteristicas():
         if evento == 'cheia':
             eventoL = self.dadosVazao[self.nPosto].isin(
                 self.dadosVazao.loc[self.dadosVazao[self.nPosto] >= limiar, self.nPosto])
-            return eventoL
+            return eventoL, limiar
         elif evento == 'estiagem':
             eventoL = self.dadosVazao[self.nPosto].isin(
                 self.dadosVazao.loc[self.dadosVazao[self.nPosto] <= limiar, self.nPosto])
-            return eventoL
+            return eventoL, limiar
         else:
             return 'Evento erro!'
 
@@ -162,16 +163,21 @@ class Caracteristicas():
         else:
             return False
 
-    def autocorrelacao(self):
-        pass
-
     def __criterio_autocorrelacao(self, dados, max_evento, dias):
-        if len(dados['Vazao']) == 1:
-            return True
-        elif dias == 0:
-            return False
 
-    def eventos_picos(self, eventosL, tipoEvento):
+        if len(max_evento['Data']) == 0:
+            return True
+        elif len(dados['Data']) == 0:
+            return False
+        else:
+            data_max = dados['Data'][dados['Vazao'].index(max(dados['Vazao']))]
+            distancia_dias = data_max - max_evento['Data'][-1]
+            print(distancia_dias.days)
+            if distancia_dias.days < dias:
+                return False
+            return True
+
+    def eventos_picos(self, eventosL, tipoEvento, dias):
         grupoEventos = eventosL.groupby(pd.Grouper(
             freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
         max_evento = {'Data': [], 'Ano': [], 'Vazao': [],
@@ -193,7 +199,8 @@ class Caracteristicas():
                     dados['Vazao'].append(self.dadosVazao.loc[i, self.nPosto])
                     dados['Data'].append(i)
                     lowLimiar = False
-                elif self.__criterioMediana(dados, i, tipoEvento):
+
+                elif self.__criterio_autocorrelacao(dados, max_evento, dias):
                     max_evento['Ano'].append(key.year)
                     max_evento['Vazao'].append(max(dados['Vazao']))
                     max_evento['Inicio'].append(dados['Data'][0])
@@ -208,9 +215,16 @@ class Caracteristicas():
                             index=max_evento['Data'])
 
     def pulsosDuracao(self, tipoEvento='cheia'):
-        #eventosL = self.parcialEventoMediaMaxima(tipoEvento)
-        eventosPicos, limiar = self.parcialPorAno(2, tipoEvento)
+        eventosL, limiar = self.parcialEventoPercentil(quartilLimiar=0.75, evento=tipoEvento)
+        eventosPicos = self.eventos_picos(eventosL, tipoEvento, dias=17)
 
+        x = eventosPicos.index
+        y = eventosPicos.Vazao
+        serie = pd.Series(y, index=x)
+        acorr = sm.stats.diagnostic.acorr_ljungbox(serie, lags=2)
+        print(acorr)
+        print(serie.autocorr(lag=1))
+        print(serie.autocorr(lag=2))
         grupoEventos = self.dadosVazao[self.nPosto].groupby(
             pd.Grouper(freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
         dic = {'Ano': [], 'Duracao': [], 'nPulsos': []}
