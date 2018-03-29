@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 from datetime import date
 import calendar as cal
-from peakutils import peak
+import math
 
 
 class Caracteristicas():
@@ -177,6 +177,23 @@ class Caracteristicas():
                 return False
             return True
 
+    def test_autocorrelacao(self, eventos_picos):
+
+        x = eventos_picos.index
+        y = eventos_picos.Vazao
+        N = len(y)
+        serie = pd.Series(y, index=x)
+        r1 = serie.autocorr(lag=1)
+        r2 = serie.autocorr(lag=2)
+        r11_n = (-1 + 1.645 * math.sqrt(N - 1 - 1)) / (N - 1)
+        r12_n = (-1 - 1.645 * math.sqrt(N - 1 - 1)) / (N - 1)
+        r21_n = (-1 + 1.645 * math.sqrt(N - 2 - 1)) / (N - 2)
+        r22_n = (-1 - 1.645 * math.sqrt(N - 2 - 1)) / (N - 2)
+
+        if r11_n > r1 > r12_n and r21_n > r2 > r22_n:
+            return False
+        return True
+
     def eventos_picos(self, eventosL, tipoEvento, dias):
         grupoEventos = eventosL.groupby(pd.Grouper(
             freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
@@ -222,18 +239,12 @@ class Caracteristicas():
                             columns=['Ano', 'Duracao', 'Inicio', 'Fim', 'Vazao'],
                             index=max_evento['Data'])
 
-
     def pulsosDuracao(self, tipoEvento='cheia'):
         eventosL, limiar = self.parcialEventoPercentil(quartilLimiar=0.75, evento=tipoEvento)
-        eventosPicos = self.eventos_picos(eventosL, tipoEvento, dias=17)
+        eventosPicos = self.eventos_picos(eventosL, tipoEvento, dias=1)
 
-        x = eventosPicos.index
-        y = eventosPicos.Vazao
-        serie = pd.Series(y, index=x)
-        #acorr = sm.stats.diagnostic.acorr_ljungbox(serie, lags=2)
-        #print(acorr)
-        print(serie.autocorr(lag=1))
-        print(serie.autocorr(lag=2))
+        print(self.test_autocorrelacao(eventosPicos))
+
         grupoEventos = self.dadosVazao[self.nPosto].groupby(
             pd.Grouper(freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
         dic = {'Ano': [], 'Duracao': [], 'nPulsos': []}
