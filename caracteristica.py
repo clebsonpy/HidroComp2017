@@ -73,11 +73,11 @@ class Caracteristicas():
         if tipoEvento == 'cheia':
             eventoL = self.dadosVazao[self.nPosto].isin(
                 self.dadosVazao.loc[self.dadosVazao[self.nPosto] >= limiar, self.nPosto])
-            return eventoL
+            return eventoL, limiar
         elif tipoEvento == 'estiagem':
             eventoL = self.dadosVazao[self.nPosto].isin(
                 self.dadosVazao.loc[self.dadosVazao[self.nPosto] <= limiar, self.nPosto])
-            return eventoL
+            return eventoL, limiar
         else:
             return 'Evento erro!'
 
@@ -98,15 +98,15 @@ class Caracteristicas():
             self.dadosVazao[self.nPosto].index.year[0]
         l = self.dadosVazao[self.nPosto].quantile(0.7)
         #vazao = -np.sort(-self.dadosVazao.loc[self.dadosVazao[self.nPosto] <= l, self.nPosto])
-        q = 0.54
-        for i in range(0, 10):
-            q -= 0.005
+        q = 1
+        while q != 0:
+            q -= 0.01
             limiar = self.dadosVazao[self.nPosto].quantile(q)
             print(limiar)
             eventosL = self.parcialEventoPorAno(limiar, tipoEvento)
             picos = self.eventos_picos(eventosL, tipoEvento)
-            print(picos)
-            if len(picos) >= nEventos * (nAnos):
+            print(len(picos), nEventos * nAnos)
+            if len(picos) >= nEventos * nAnos:
                 return picos, limiar
 
     def maxAnual(self):
@@ -193,7 +193,7 @@ class Caracteristicas():
             return False
         return True
 
-    def eventos_picos(self, eventosL, tipoEvento, dias):
+    def eventos_picos(self, eventosL, tipoEvento, dias=1):
         grupoEventos = eventosL.groupby(pd.Grouper(
             freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
         max_evento = {'Data': [], 'Ano': [], 'Vazao': [],
@@ -239,8 +239,8 @@ class Caracteristicas():
                             index=max_evento['Data'])
 
     def pulsosDuracao(self, tipoEvento='cheia'):
-        eventosL, limiar = self.parcialEventoPercentil(quartilLimiar=0.75, evento=tipoEvento)
-        eventosPicos = self.eventos_picos(eventosL, tipoEvento, dias=1)
+        eventosL, limiar = self.parcialEventoPercentil(0.75, tipoEvento)
+        eventosPicos = self.eventos_picos(eventosL, tipoEvento, dias=5)
 
         print(self.test_autocorrelacao(eventosPicos))
 

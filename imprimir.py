@@ -179,7 +179,8 @@ class Graficos(pp.Prepara):
 
     def plotHidroParcial(self, dfPicos, limiar, nomeGrafico):
         #limiar = self.dados[self.nPosto].quantile(limiar)
-        #median = self.dados[self.nPosto].median()
+        median = self.dados[self.nPosto].median()
+        #mean = self.dados[self.nPosto].mean()
 
         if self.nPosto == None:
             return 'Erro! forneça o n° do Posto'
@@ -234,7 +235,7 @@ class Graficos(pp.Prepara):
                     title = "Vazão(m³/s)",
             )
             layout = dict(
-                title = "Hidrograma Início e Fim de Eventos (%s)" % nomeGrafico.title(),
+                title = "Hidrograma Série Duração Parcial (%s)" % nomeGrafico.title(),
                 xaxis=bandxaxis,
                 yaxis=bandyaxis,
             )
