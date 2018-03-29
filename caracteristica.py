@@ -172,7 +172,6 @@ class Caracteristicas():
         else:
             data_max = dados['Data'][dados['Vazao'].index(max(dados['Vazao']))]
             distancia_dias = data_max - max_evento['Data'][-1]
-            print(distancia_dias.days)
             if distancia_dias.days < dias:
                 return False
             return True
