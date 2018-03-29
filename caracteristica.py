@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 from datetime import date
 import calendar as cal
-import statsmodels.api as sm
+from peakutils import peak
 
 
 class Caracteristicas():
@@ -209,10 +209,19 @@ class Caracteristicas():
                     max_evento['Data'].append(dados['Data'][dados['Vazao'].index(max(dados['Vazao']))])
                     dados = {'Data': [], 'Vazao': []}
 
+                elif len(dados['Vazao']) > 0 and max_evento['Vazao'][-1] < max(dados['Vazao']):
+                    max_evento['Ano'][-1] = key.year
+                    max_evento['Vazao'][-1] = max(dados['Vazao'])
+                    max_evento['Fim'][-1] = dados['Data'][-1]
+                    max_evento['Duracao'][-1] = len(dados['Data'])
+                    max_evento['Data'][-1] = dados['Data'][dados['Vazao'].index(max(dados['Vazao']))]
+                    dados = {'Data': [], 'Vazao': []}
+
                 iAntes = i
         return pd.DataFrame(max_evento,
                             columns=['Ano', 'Duracao', 'Inicio', 'Fim', 'Vazao'],
                             index=max_evento['Data'])
+
 
     def pulsosDuracao(self, tipoEvento='cheia'):
         eventosL, limiar = self.parcialEventoPercentil(quartilLimiar=0.75, evento=tipoEvento)
@@ -221,8 +230,8 @@ class Caracteristicas():
         x = eventosPicos.index
         y = eventosPicos.Vazao
         serie = pd.Series(y, index=x)
-        acorr = sm.stats.diagnostic.acorr_ljungbox(serie, lags=2)
-        print(acorr)
+        #acorr = sm.stats.diagnostic.acorr_ljungbox(serie, lags=2)
+        #print(acorr)
         print(serie.autocorr(lag=1))
         print(serie.autocorr(lag=2))
         grupoEventos = self.dadosVazao[self.nPosto].groupby(

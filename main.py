@@ -22,7 +22,7 @@ if __name__ == "__main__":
 #                         tipoDado='pluviométrico').lerArquivos()
     dados = pd.read_csv("dadosXingo.csv", index_col=0, names=[
                         "Data", "XINGO"], parse_dates=True)
-    dados = crt.Caracteristicas(dados, 'XINGO', dataInicio='1/1/1985')
+    dados = crt.Caracteristicas(dados, 'XINGO', dataInicio='1/1/1999')
 #    maxAnual = dadosCrt.maxAnual()
 #    print(maxAnual)
     mesInicioAnoHidro = dados.mesInicioAnoHidrologico()
