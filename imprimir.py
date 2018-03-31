@@ -16,6 +16,7 @@ from matplotlib import pyplot as plt
 import plotly as py
 import plotly.graph_objs as go
 import plotly.figure_factory as FF
+import colorlover as cl
 import cufflinks as cf
 
 class Graficos(pp.Prepara):
@@ -283,7 +284,7 @@ class Graficos(pp.Prepara):
                 title = "Hidrograma",
                 xaxis=bandxaxis,
                 yaxis=bandyaxis,
-                width=800, height=640,
+                width=1050, height=840,
                 autosize = False)
 
         fig = dict(data=data, layout=layout)
@@ -294,7 +295,7 @@ class Graficos(pp.Prepara):
         if self.nPosto == None:
             fig = self.dados.iplot(kind='scatter', asFigure=True)
         else:
-            fig = self.dados[self.nPosto].iplot(kind='scatter', asFigure=True)
+            fig = self.dados[self.nPosto].iplot(kind='scatter', asFigure=True, color='blue')
 
         py.offline.plot(fig, filename='gráficos/hidrograma'+'.html')
 
