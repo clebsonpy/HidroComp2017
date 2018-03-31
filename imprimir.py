@@ -55,10 +55,9 @@ class Graficos(pp.Prepara):
         layout = go.Layout(
             angularaxis = angularX,
             title='',
-            font=dict(
-                size=16
-            ),
+            font=dict(family='Courier New, monospace', size=18, color='#7f7f7f'),
             orientation=270,
+
         )
 
         fig = go.Figure(data=data, layout=layout)
@@ -101,7 +100,8 @@ class Graficos(pp.Prepara):
         layout = dict(
             title = "Duração Média de Eventos de %s" % tipo.title(),
             xaxis = bandxaxis,
-            yaxis = bandyaxis)
+            yaxis = bandyaxis,
+            font=dict(family='Courier New, monospace', size=18, color='#7f7f7f'))
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/Duracao' + tipo + '.html')
 
@@ -123,7 +123,8 @@ class Graficos(pp.Prepara):
         layout = dict(
             title = "Número de Pulsos de %s" % tipo,
             xaxis = bandxaxis,
-            yaxis = bandyaxis)
+            yaxis = bandyaxis,
+            font=dict(family='Courier New, monospace', size=18, color='#7f7f7f'))
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/NPulsos' + tipo + '.html')
 
@@ -149,7 +150,8 @@ class Graficos(pp.Prepara):
         layout = dict(
             title = "Número de reversões anuais de vazões",
             xaxis = bandxaxis,
-            yaxis = bandyaxis)
+            yaxis = bandyaxis,
+            font=dict(family='Courier New, monospace', size=18, color='#7f7f7f'))
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/reversões' + '.html')
         return r, rMed, rCv
@@ -173,7 +175,8 @@ class Graficos(pp.Prepara):
         layout = dict(
             title = "Taxa de %s de vazão" % typeRate.title(),
             xaxis = bandxaxis,
-            yaxis = bandyaxis)
+            yaxis = bandyaxis,
+            font=dict(family='Courier New, monospace', size=18, color='#7f7f7f'))
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/%s' % typeRate + '.html')
 
@@ -239,6 +242,7 @@ class Graficos(pp.Prepara):
                 title = "Hidrograma Série Duração Parcial (%s)" % nomeGrafico.title(),
                 xaxis=bandxaxis,
                 yaxis=bandyaxis,
+                font=dict(family='Courier New, monospace', size=18, color='#7f7f7f')
             )
             fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/%s' % nomeGrafico + '.html')
@@ -281,21 +285,37 @@ class Graficos(pp.Prepara):
             )
 
         layout = dict(
-                title = "Hidrograma",
-                xaxis=bandxaxis,
-                yaxis=bandyaxis,
-                width=1050, height=840,
-                autosize = False)
+            title = "Hidrograma",
+            xaxis=bandxaxis,
+            yaxis=bandyaxis,
+            width=1050, height=840,
+            autosize = False,
+            font=dict(family='Courier New, monospace', size=18, color='#7f7f7f'))
 
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/Hidrograma_Ano_%s' % self.nPosto + ".html")
 
 
     def plotHidro(self):
+        bandxaxis = go.XAxis(
+            title="Data",
+        )
+
+        bandyaxis = go.YAxis(
+            title="Vazão(m³/s)",
+        )
+
+        layout = dict(
+            title="Hidrograma",
+            xaxis=bandxaxis,
+            yaxis=bandyaxis,
+            font=dict(family='Courier New, monospace', size=22, color='#7f7f7f'))
+
         if self.nPosto == None:
-            fig = self.dados.iplot(kind='scatter', asFigure=True)
+            fig = self.dados.iplot(kind='scatter', asFigure=True, layout=layout)
         else:
-            fig = self.dados[self.nPosto].iplot(kind='scatter', asFigure=True, color='blue')
+            fig = self.dados[self.nPosto].iplot(kind='scatter', asFigure=True,
+                                                layout=layout, color='#17BECF')
 
         py.offline.plot(fig, filename='gráficos/hidrograma'+'.html')
 
