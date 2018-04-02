@@ -216,7 +216,7 @@ class Caracteristicas():
                     dados['Data'].append(i)
                     lowLimiar = False
 
-                elif self.__criterio_autocorrelacao(dados, max_evento, dias):
+                elif self.__criterioMediana(dados, i, tipoEvento):
                     max_evento['Ano'].append(key.year)
                     max_evento['Vazao'].append(max(dados['Vazao']))
                     max_evento['Inicio'].append(dados['Data'][0])
@@ -224,7 +224,7 @@ class Caracteristicas():
                     max_evento['Duracao'].append(len(dados['Data']))
                     max_evento['Data'].append(dados['Data'][dados['Vazao'].index(max(dados['Vazao']))])
                     dados = {'Data': [], 'Vazao': []}
-
+                """
                 elif len(dados['Vazao']) > 0 and max_evento['Vazao'][-1] < max(dados['Vazao']):
                     max_evento['Ano'][-1] = key.year
                     max_evento['Vazao'][-1] = max(dados['Vazao'])
@@ -232,7 +232,7 @@ class Caracteristicas():
                     max_evento['Duracao'][-1] = len(dados['Data'])
                     max_evento['Data'][-1] = dados['Data'][dados['Vazao'].index(max(dados['Vazao']))]
                     dados = {'Data': [], 'Vazao': []}
-
+                """
                 iAntes = i
         return pd.DataFrame(max_evento,
                             columns=['Ano', 'Duracao', 'Inicio', 'Fim', 'Vazao'],
@@ -240,7 +240,7 @@ class Caracteristicas():
 
     def pulsosDuracao(self, tipoEvento='cheia'):
         eventosL, limiar = self.parcialEventoPercentil(0.75, tipoEvento)
-        eventosPicos = self.eventos_picos(eventosL, tipoEvento, dias=5)
+        eventosPicos = self.eventos_picos(eventosL, tipoEvento)
 
         print(self.test_autocorrelacao(eventosPicos))
 
