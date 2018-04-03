@@ -316,7 +316,6 @@ class Graficos(pp.Prepara):
             x=dados.Magnitude,
             y=dados.index,
             mode='lines',
-            name = "%s\n%s\n%s" % (forma, loc, escala)
         )
         bandxaxis = go.XAxis(
             title="Vazão(m³/s)",
@@ -332,8 +331,7 @@ class Graficos(pp.Prepara):
             yaxis=bandyaxis,
             width=1050,
             height=840,
-            font=dict(family='Courier New, monospace', size=16, color='#7f7f7f'),
-            showlegend=True)
+            font=dict(family='Courier New, monospace', size=16, color='#7f7f7f'))
 
 
         fig = dict(data=[line], layout=layout)
