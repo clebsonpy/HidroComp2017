@@ -63,7 +63,6 @@ class Graficos(pp.Prepara):
         fig = go.Figure(data=data, layout=layout)
         py.offline.plot(fig, filename='polar-area-chart')
 
-
     def plotGantt(self, dfGantt, tipo=None):
         fig = FF.create_gantt(dfGantt, colors = '#000000', group_tasks=True, title= "Eventos de Cheias")
         if tipo == 'spells':
@@ -79,9 +78,8 @@ class Graficos(pp.Prepara):
             fig['layout']['xaxis']['title'] = 'Mês'
             fig['layout']['yaxis']['title'] = 'Anos'
             return py.offline.plot(fig, filename='gráficos/floodSpells.html')
-        
-        return py.offline.plot(fig, filename='gráficos/gantt.html')
 
+        return py.offline.plot(fig, filename='gráficos/gantt.html')
 
     def plotDuraçãoPulso(self, eventos, tipo):
         rateQ = go.Scatter(x=eventos.Ano,
@@ -105,7 +103,6 @@ class Graficos(pp.Prepara):
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/Duracao' + tipo + '.html')
 
-
     def plotNPulsos(self, eventos, tipo):
         rateQ = go.Scatter(x=eventos.Ano,
                 y=eventos.nPulsos,
@@ -127,7 +124,6 @@ class Graficos(pp.Prepara):
             font=dict(family='Courier New, monospace', size=18, color='#7f7f7f'))
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/NPulsos' + tipo + '.html')
-
 
     def plotReversoes(self, dfRise, dfFall):
         r = dfRise["Soma"] + dfFall["Soma"]
@@ -156,7 +152,6 @@ class Graficos(pp.Prepara):
         py.offline.plot(fig, filename='gráficos/reversões' + '.html')
         return r, rMed, rCv
 
-
     def plotRate(self, dfRate, typeRate):
 
         rateQ = go.Scatter(x=dfRate.Ano,
@@ -179,7 +174,6 @@ class Graficos(pp.Prepara):
             font=dict(family='Courier New, monospace', size=18, color='#7f7f7f'))
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/%s' % typeRate + '.html')
-
 
     def plotHidroParcial(self, dfPicos, limiar, nomeGrafico):
         #limiar = self.dados[self.nPosto].quantile(limiar)
@@ -247,7 +241,6 @@ class Graficos(pp.Prepara):
             fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/%s' % nomeGrafico + '.html')
 
-
     def plotHidroPorAno(self, mesIniAno = (1, 'JAN')):
         df = self.grupoAnoHidro(mesIniAno)
 
@@ -295,7 +288,6 @@ class Graficos(pp.Prepara):
         fig = dict(data=data, layout=layout)
         py.offline.plot(fig, filename='gráficos/Hidrograma_Ano_%s' % self.nPosto + ".html")
 
-
     def plotHidro(self):
         bandxaxis = go.XAxis(
             title="Data",
@@ -318,6 +310,63 @@ class Graficos(pp.Prepara):
                                                 layout=layout, color='#17BECF')
 
         py.offline.plot(fig, filename='gráficos/hidrograma'+'.html')
+
+    def plot_distr(self, dados, forma, loc, escala):
+        line = go.Scatter(
+            x=dados.Magnitude,
+            y=dados.index,
+            mode='lines',
+            name = "%s\n%s\n%s" % (forma, loc, escala)
+        )
+        bandxaxis = go.XAxis(
+            title="Vazão(m³/s)",
+        )
+
+        bandyaxis = go.YAxis(
+            title="Probabilidade",
+        )
+
+        layout = dict(
+            title="Generalizada de Pareto",
+            xaxis=bandxaxis,
+            yaxis=bandyaxis,
+            width=1050,
+            height=840,
+            font=dict(family='Courier New, monospace', size=16, color='#7f7f7f'),
+            showlegend=True)
+
+
+        fig = dict(data=[line], layout=layout)
+
+        py.offline.plot(fig, filename='gráficos/linha' + '.html')
+
+    def plot_point(self, dados, coluna, nome_grafico):
+
+        trace1 = go.Scatter(
+            x=dados[coluna],
+            y=dados.index,
+            mode="markers",
+            marker=dict(
+                size=5,),
+        )
+
+        data = [trace1]
+
+        bandxaxis = go.XAxis(
+            title="Vazão",
+        )
+
+        bandyaxis = go.YAxis(
+            title="Autocorrelação",
+        )
+        layout = dict(
+            title="Autocorrelação",
+            xaxis=bandxaxis,
+            yaxis=bandyaxis,
+            font=dict(family='Courier New, monospace', size=16, color='#7f7f7f'))
+
+        fig = dict(data=data, layout=layout)
+        py.offline.plot(fig, filename='gráficos/%s' % nome_grafico + '.html')
 
 
 class Arquivo():

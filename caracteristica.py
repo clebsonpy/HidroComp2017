@@ -55,13 +55,13 @@ class Caracteristicas():
         dic = {'Inicio': listaInicio, 'Fim': listaFim}
         return pd.DataFrame(dic)
 
-    def parcialEventoPercentil(self, quartilLimiar, evento):
+    def parcialEventoPercentil(self, quartilLimiar, tipoEvento):
         limiar = self.dadosVazao[self.nPosto].quantile(quartilLimiar)
-        if evento == 'cheia':
+        if tipoEvento == 'cheia':
             eventoL = self.dadosVazao[self.nPosto].isin(
                 self.dadosVazao.loc[self.dadosVazao[self.nPosto] >= limiar, self.nPosto])
             return eventoL, limiar
-        elif evento == 'estiagem':
+        elif tipoEvento == 'estiagem':
             eventoL = self.dadosVazao[self.nPosto].isin(
                 self.dadosVazao.loc[self.dadosVazao[self.nPosto] <= limiar, self.nPosto])
             return eventoL, limiar
@@ -172,7 +172,7 @@ class Caracteristicas():
         else:
             data_max = dados['Data'][dados['Vazao'].index(max(dados['Vazao']))]
             distancia_dias = data_max - max_evento['Data'][-1]
-            if distancia_dias.days < dias:
+            if distancia_dias.days <= dias:
                 return False
             return True
 
@@ -190,8 +190,8 @@ class Caracteristicas():
         r22_n = (-1 - 1.645 * math.sqrt(N - 2 - 1)) / (N - 2)
 
         if r11_n > r1 > r12_n and r21_n > r2 > r22_n:
-            return False
-        return True
+            return False, r1, r2
+        return True, r1, r2
 
     def eventos_picos(self, eventosL, tipoEvento, dias=1):
         grupoEventos = eventosL.groupby(pd.Grouper(
@@ -216,7 +216,7 @@ class Caracteristicas():
                     dados['Data'].append(i)
                     lowLimiar = False
 
-                elif self.__criterioMediana(dados, i, tipoEvento):
+                elif self.__criterio_autocorrelacao(dados, max_evento, dias):
                     max_evento['Ano'].append(key.year)
                     max_evento['Vazao'].append(max(dados['Vazao']))
                     max_evento['Inicio'].append(dados['Data'][0])
@@ -224,15 +224,15 @@ class Caracteristicas():
                     max_evento['Duracao'].append(len(dados['Data']))
                     max_evento['Data'].append(dados['Data'][dados['Vazao'].index(max(dados['Vazao']))])
                     dados = {'Data': [], 'Vazao': []}
-                """
-                elif len(dados['Vazao']) > 0 and max_evento['Vazao'][-1] < max(dados['Vazao']):
+
+                elif dias > 0 and len(dados['Vazao']) > 0 and max_evento['Vazao'][-1] < max(dados['Vazao']):
                     max_evento['Ano'][-1] = key.year
                     max_evento['Vazao'][-1] = max(dados['Vazao'])
                     max_evento['Fim'][-1] = dados['Data'][-1]
                     max_evento['Duracao'][-1] = len(dados['Data'])
                     max_evento['Data'][-1] = dados['Data'][dados['Vazao'].index(max(dados['Vazao']))]
                     dados = {'Data': [], 'Vazao': []}
-                """
+
                 iAntes = i
         return pd.DataFrame(max_evento,
                             columns=['Ano', 'Duracao', 'Inicio', 'Fim', 'Vazao'],
@@ -240,7 +240,7 @@ class Caracteristicas():
 
     def pulsosDuracao(self, tipoEvento='cheia'):
         eventosL, limiar = self.parcialEventoPercentil(0.75, tipoEvento)
-        eventosPicos = self.eventos_picos(eventosL, tipoEvento)
+        eventosPicos = self.eventos_picos(eventosL, tipoEvento, dias=5)
 
         print(self.test_autocorrelacao(eventosPicos))
 
@@ -261,6 +261,24 @@ class Caracteristicas():
         nPulsoMedio = evento.nPulsos.mean()
         nPulsoCv = evento.nPulsos.std()/nPulsoMedio
         return eventosPicos, evento, durMedia, durCv, nPulsoMedio, nPulsoCv, limiar
+
+    def autocorrelacao_por_vazao(self, tipoEvento):
+
+        percentil = 0.8
+        autocorrelacao = {'Vazao': [], 'Lag1': [], 'Lag2': []}
+        while percentil >= 0:
+            eventosL, limiar = self.parcialEventoPercentil(percentil, tipoEvento)
+            eventosPicos = self.eventos_picos(eventosL, tipoEvento, dias=0)
+            test_autocorrelacao = self.test_autocorrelacao(eventosPicos)
+            r1 = test_autocorrelacao[1]
+            r2 = test_autocorrelacao[2]
+            autocorrelacao['Vazao'].append(limiar)
+            autocorrelacao['Lag1'].append(abs(r1))
+            autocorrelacao['Lag2'].append(abs(r2))
+            percentil -= 0.005
+        return pd.DataFrame(autocorrelacao,
+                            columns=['Lag1', 'Lag2'],
+                            index=autocorrelacao['Vazao'])
 
     def ChecksTypeRate(self, value1, value2, typeRate):
         if typeRate == 'rise':
