@@ -24,6 +24,7 @@ class Bootstrap():
 class Parametros():
     def __init__(self, dados):
         self.dados = dados['Vazao'].values
+        print(self.dados)
         
     def mvs(self, distribuicao):
         if distribuicao == 'GEV':

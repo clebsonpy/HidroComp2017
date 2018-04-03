@@ -98,9 +98,8 @@ class Caracteristicas():
             self.dadosVazao[self.nPosto].index.year[0]
         l = self.dadosVazao[self.nPosto].quantile(0.7)
         #vazao = -np.sort(-self.dadosVazao.loc[self.dadosVazao[self.nPosto] <= l, self.nPosto])
-        q = 1
+        q = 0.8
         while q != 0:
-            q -= 0.01
             limiar = self.dadosVazao[self.nPosto].quantile(q)
             print(limiar)
             eventosL = self.parcialEventoPorAno(limiar, tipoEvento)
@@ -108,6 +107,7 @@ class Caracteristicas():
             print(len(picos), nEventos * nAnos)
             if len(picos) >= nEventos * nAnos:
                 return picos, limiar
+            q -= 0.005
 
     def maxAnual(self):
         gDados = self.dadosVazao.groupby(pd.Grouper(
@@ -239,10 +239,10 @@ class Caracteristicas():
                             index=max_evento['Data'])
 
     def pulsosDuracao(self, tipoEvento='cheia'):
-        eventosL, limiar = self.parcialEventoPercentil(0.75, tipoEvento)
-        eventosPicos = self.eventos_picos(eventosL, tipoEvento)
+        eventosPicos, limiar = self.parcialPorAno(1.65, tipoEvento)
+        #eventosPicos = self.eventos_picos(eventosL, tipoEvento)
 
-        print(self.test_autocorrelacao(eventosPicos))
+        print(self.test_autocorrelacao(eventosPicos)[0])
 
         grupoEventos = self.dadosVazao[self.nPosto].groupby(
             pd.Grouper(freq='AS-%s' % self.mesInicioAnoHidrologico()[1]))
