@@ -216,7 +216,7 @@ class Caracteristicas():
                     dados['Data'].append(i)
                     lowLimiar = False
 
-                elif self.__criterioMediana(dados, i , tipoEvento):
+                elif self.__criterioMedia(dados, i , tipoEvento):
                     max_evento['Ano'].append(key.year)
                     max_evento['Vazao'].append(max(dados['Vazao']))
                     max_evento['Inicio'].append(dados['Data'][0])
@@ -239,7 +239,7 @@ class Caracteristicas():
                             index=max_evento['Data'])
 
     def pulsosDuracao(self, tipoEvento='cheia'):
-        eventosPicos, limiar = self.parcialPorAno(1.65, tipoEvento)
+        eventosPicos, limiar = self.parcialPorAno(2.3, tipoEvento)
         #eventosPicos = self.eventos_picos(eventosL, tipoEvento)
 
         print(self.test_autocorrelacao(eventosPicos)[0])
@@ -253,14 +253,14 @@ class Caracteristicas():
                 eventosPicos.Duracao.loc[eventosPicos.Ano == i.year].mean())
             dic['nPulsos'].append(
                 len(eventosPicos.loc[eventosPicos.Ano == i.year]))
-        evento = pd.DataFrame(dic)
-        evento.set_value(
-            evento.loc[evento.Duracao.isnull()].index, 'Duracao', 0)
-        durMedia = evento.Duracao.mean()
-        durCv = evento.Duracao.std()/durMedia
-        nPulsoMedio = evento.nPulsos.mean()
-        nPulsoCv = evento.nPulsos.std()/nPulsoMedio
-        return eventosPicos, evento, durMedia, durCv, nPulsoMedio, nPulsoCv, limiar
+        evento_por_ano = pd.DataFrame(dic)
+        evento_por_ano.set_value(
+            evento_por_ano.loc[evento_por_ano.Duracao.isnull()].index, 'Duracao', 0)
+        durMedia = evento_por_ano.Duracao.mean()
+        durCv = evento_por_ano.Duracao.std()/durMedia
+        nPulsoMedio = evento_por_ano.nPulsos.mean()
+        nPulsoCv = evento_por_ano.nPulsos.std()/nPulsoMedio
+        return eventosPicos, evento_por_ano, durMedia, durCv, nPulsoMedio, nPulsoCv, limiar
 
     def autocorrelacao_por_vazao(self, tipoEvento):
 

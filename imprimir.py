@@ -311,12 +311,17 @@ class Graficos(pp.Prepara):
 
         py.offline.plot(fig, filename='gráficos/hidrograma'+'.html')
 
-    def plot_distr(self, dados, forma, loc, escala):
-        line = go.Scatter(
-            x=dados.Magnitude,
-            y=dados.index,
-            mode='lines',
-        )
+    def plot_distr(self, dados):
+        
+        data = []
+        for i in dados:
+            line = go.Scatter(
+                x = dados[i],
+                y = dados.index,
+                name = i
+            )
+            data.append(line)
+            
         bandxaxis = go.XAxis(
             title="Vazão(m³/s)",
         )
@@ -329,14 +334,13 @@ class Graficos(pp.Prepara):
             title="Generalizada de Pareto",
             xaxis=bandxaxis,
             yaxis=bandyaxis,
-            width=1050,
-            height=840,
-            font=dict(family='Courier New, monospace', size=16, color='#7f7f7f'))
+            width=840,
+            height=672,
+            font=dict(family='Courier New, monospace', size=12, color='#7f7f7f'))
 
 
-        fig = dict(data=[line], layout=layout)
-
-        py.offline.plot(fig, filename='gráficos/linha' + '.html')
+        fig = dict(data=data, layout=layout)
+        py.offline.plot(fig, filename='gráficos/genparetoacumulada' + '.html')
 
     def plot_point(self, dados, coluna, nome_grafico):
 

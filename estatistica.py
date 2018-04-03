@@ -42,7 +42,7 @@ class Parametros():
 
 class Magnitudes():
 
-    def __init__(self, forma, localizacao, escala):
+    def __init__(self, forma=None, localizacao=None, escala=None):
         self.forma = forma
         self.loc = localizacao
         self.escala = escala
@@ -54,17 +54,23 @@ class Magnitudes():
 
         return quantil
 
-    def lista_de_magnitudes(self, tamanho, distribuicao):
-
-        esp = 1/tamanho
-        prob = 0
-        listaprob = []
-        lista = []
-        for i in range(tamanho):
-            if distribuicao == 'genepareto':
-                mag = self.genepareto(prob)
-            lista.append(mag)
-            listaprob.append(prob)
-            prob += esp
-
-        return pd.DataFrame(lista, columns=['Magnitude'], index=listaprob)
+    def lista_de_magnitudes(self, tamanho, distribuicao, parametros):
+        
+        dic = {}
+        for i in parametros:
+            para = parametros[i]
+            magEst = Magnitudes(para[0], para[1], para[2])
+            esp = 1/tamanho
+            prob = 0
+            listaprob = []
+            lista = []
+            for j in range(tamanho):
+                if distribuicao == 'genepareto':
+                    mag = magEst.genepareto(prob)
+                lista.append(mag)
+                listaprob.append(prob)
+                prob += esp
+            dic[i] = lista
+        print(dic)
+            
+        return pd.DataFrame(dic, index=listaprob)
