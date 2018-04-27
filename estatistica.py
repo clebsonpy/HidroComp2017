@@ -10,22 +10,22 @@ import numpy as np
 import scipy.stats as stat
 
 class Bootstrap():
-    
+
     def __init__(self, tamanhoAmosta):
         self.tamanhoAmostra = tamanhoAmosta
-        
+
     def gev(self, forma, loc, esc):
         amostra = pd.DataFrame()
-        
-        
+
+
     def normal(self, media, desvio):
        pass
 
 class Parametros():
     def __init__(self, dados):
-        self.dados = dados['Vazao'].values
+        self.dados = dados['XINGO'].values
         print(self.dados)
-        
+
     def mvs(self, distribuicao):
         if distribuicao == 'GEV':
             parametros = stat.genextreme.fit(self.dados)
@@ -35,7 +35,7 @@ class Parametros():
             parametros = stat.genpareto.fit(self.dados)
 
         return parametros
-    
+
     def mml(self):
         if self.distribuicao == 'GEV':
             parametros = stat.genextreme
@@ -55,7 +55,7 @@ class Magnitudes():
         return quantil
 
     def lista_de_magnitudes(self, tamanho, distribuicao, parametros):
-        
+
         dic = {}
         for i in parametros:
             para = parametros[i]
@@ -72,5 +72,5 @@ class Magnitudes():
                 prob += esp
             dic[i] = lista
         print(dic)
-            
+
         return pd.DataFrame(dic, index=listaprob)

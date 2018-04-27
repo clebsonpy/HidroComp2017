@@ -12,7 +12,7 @@ import calendar as cal
 import math
 
 
-class Caracteristicas():
+class Caracteristicas(object):
     def __init__(self, dadosVazao, nPosto=None, dataInicio=None, dataFim=None):
         self.nPosto = nPosto.upper()
         if dataInicio != None and dataFim != None:
