@@ -19,7 +19,7 @@ def renomearTxt(caminho, listaTxt):
                     if linha.split(":")[0] == "//   Código da Estação":
                         nome = linha.split(":")[1][1:-1]
                         print(nome)
-                        os.rename(os.path.join(caminho, txt+'.TXT'), 
+                        os.rename(os.path.join(caminho, txt+'.TXT'),
                                   os.path.join(caminho, nome+".TXT"))
 
 def extraindoZip(caminho, listaZip):
@@ -30,5 +30,5 @@ def extraindoZip(caminho, listaZip):
         print('Arquivo Extraido!')
 
 if __name__ == "__main__":
-    caminho = "/home/clebson/Documentos/Projetos/HidroComp2017/Dados_Chuva"
+    caminho = "/home/clebsonpy/Vazões"
     extraindoZip(caminho, listaArq(caminho)[0])

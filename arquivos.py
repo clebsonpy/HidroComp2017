@@ -5,7 +5,7 @@ import multiprocessing as mp
 
 class Arquivos(la.LerTxt, la.LerXls, la.LerSam):
 
-    def __init__(self, caminho, fonte, nomeArquivo=None, consistencia=1, tipoDado='fluviometrico'):
+    def __init__(self, caminho, fonte, nomeArquivo=None, consistencia=2, tipoDado='fluviometrico'):
         self.caminho = caminho
         self.fonte = fonte.upper()
         self.nomeArquivo = nomeArquivo
@@ -16,7 +16,7 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerSam):
     def listaArq(self):
         print(self.caminho)
         listaDir = os.listdir(self.caminho) #Lista tudo q contêm na pasta
-        tipos = {'ONS':'.xls', 'ANA':'.TXT', 'NASA':'.HDF5', 'CEMADEN':'.sam', 'CHESF': '.xls'} #Dic de ext referênte a cada fonte 
+        tipos = {'ONS':'.xls', 'ANA':'.txt', 'NASA':'.HDF5', 'CEMADEN':'.sam', 'CHESF': '.xls'} #Dic de ext referênte a cada fonte
         listaArquivo = []
         for arquivo in listaDir:
             if os.path.isfile(os.path.join(self.caminho, arquivo)):
@@ -26,15 +26,16 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerSam):
         if len(listaArquivo) == 1:
             listaArquivo = listaArquivo[0]
         return listaArquivo
-    
-    
+
+
     def lerArquivos(self, nome=None):
         self.nomeArquivo = nome
         if self.nomeArquivo == None:
             self.nomeArquivo = self.listaArq()
+            print(self.nomeArquivo)
 
         if type(self.nomeArquivo) == list:
-            p = mp.Pool(1) # Inicia multiprocessos
+            p = mp.Pool(2) # Inicia multiprocessos
             listaDfs = p.map(self.lerArquivos, self.nomeArquivo) #Executa multiprocessos
             p.close() #finaliza multiprocessos
             if self.fonte == 'ANA':
@@ -47,14 +48,14 @@ class Arquivos(la.LerTxt, la.LerXls, la.LerSam):
                 return dadosVazao.sort_index()
 
         else:
-            
+
             if self.fonte == 'ANA':
                 dados = self.lerTxt()
                 dados = dados.iloc[dados.index.isin([self.consistencia], level=1)]
                 dados.reset_index(level=1, drop=True, inplace=True)
                 return dados
             elif self.fonte == 'ONS':
-                return self.lerOns()   
+                return self.lerOns()
             elif self.fonte == 'CHESF':
                 return self.lerChesf()
 #            elif self.fonte == 'NASA':
